@@ -89,7 +89,7 @@ func TestSetupRouter(t *testing.T) {
 	mockAuthManager := NewMockAuthManager()
 	router := SetupRouter(mockAuthHandler, mockAuthManager)
 
-	// Test cases structure
+	// Test cases: only routes that exist in SetupRouter (no GET / in current router)
 	tests := []struct {
 		name           string
 		method         string
@@ -97,13 +97,6 @@ func TestSetupRouter(t *testing.T) {
 		expectedStatus int
 		expectedBody   map[string]string
 	}{
-		{
-			name:           "Root endpoint",
-			method:         "GET",
-			path:           "/",
-			expectedStatus: http.StatusOK,
-			expectedBody:   map[string]string{"message": "Hello GoHTMX"},
-		},
 		{
 			name:           "Ping endpoint",
 			method:         "GET",

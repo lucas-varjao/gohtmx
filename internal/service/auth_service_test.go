@@ -3,6 +3,7 @@ package service
 
 import (
 	"testing"
+	"time"
 
 	"github.com/lucas-varjao/gohtmx/internal/auth"
 	gormadapter "github.com/lucas-varjao/gohtmx/internal/auth/adapter/gorm"
@@ -238,4 +239,56 @@ func TestAuthService_RequestPasswordReset(t *testing.T) {
 	assert.Equal(t, user.Username, sentEmails[0].Username)
 	assert.Equal(t, user.DisplayName, sentEmails[0].DisplayName)
 	assert.NotEmpty(t, sentEmails[0].Token)
+}
+
+func TestAuthService_ResetPassword_ValidToken(t *testing.T) {
+	authService, _, _, _, mockEmailService, db := setupTest(t)
+	user := createTestUser(t, db)
+
+	err := authService.RequestPasswordReset(user.Email)
+	require.NoError(t, err)
+
+	sentEmails := mockEmailService.GetSentEmails()
+	require.Len(t, sentEmails, 1)
+	plainToken := sentEmails[0].Token
+	require.NotEmpty(t, plainToken)
+
+	newPassword := "NewSecurePass123!"
+	err = authService.ResetPassword(plainToken, newPassword)
+	require.NoError(t, err)
+
+	var updated models.User
+	require.NoError(t, db.First(&updated, user.ID).Error)
+	assert.Empty(t, updated.ResetToken)
+	assert.True(t, updated.ResetTokenExpiry.IsZero())
+	// Password changed: login with new password works
+	loginResp, err := authService.Login(user.Username, newPassword, "127.0.0.1", "test")
+	require.NoError(t, err)
+	assert.NotEmpty(t, loginResp.SessionID)
+}
+
+func TestAuthService_ResetPassword_ExpiredToken(t *testing.T) {
+	authService, _, _, _, mockEmailService, db := setupTest(t)
+	user := createTestUser(t, db)
+
+	err := authService.RequestPasswordReset(user.Email)
+	require.NoError(t, err)
+
+	sentEmails := mockEmailService.GetSentEmails()
+	require.Len(t, sentEmails, 1)
+	plainToken := sentEmails[0].Token
+
+	// Set expiry to the past
+	require.NoError(t, db.Model(&models.User{}).Where("id = ?", user.ID).
+		Update("reset_token_expiry", time.Now().Add(-time.Hour)).Error)
+
+	err = authService.ResetPassword(plainToken, "NewSecurePass123!")
+	assert.ErrorIs(t, err, ErrExpiredToken)
+}
+
+func TestAuthService_ResetPassword_InvalidToken(t *testing.T) {
+	authService, _, _, _, _, _ := setupTest(t)
+
+	err := authService.ResetPassword("nonexistent-token", "NewSecurePass123!")
+	assert.ErrorIs(t, err, ErrInvalidToken)
 }

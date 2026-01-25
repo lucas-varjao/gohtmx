@@ -567,3 +567,57 @@ func TestAuthHandler_ResetPassword(t *testing.T) {
 		})
 	}
 }
+
+func TestAuthHandler_GetCurrentUser(t *testing.T) {
+	t.Run("success when user in context", func(t *testing.T) {
+		c, w := setupTestRouter()
+		handler := NewAuthHandler(&MockAuthService{})
+
+		user := &auth.UserData{
+			ID:          "1",
+			Identifier:  "testuser",
+			DisplayName: "Test User",
+			Email:       "test@example.com",
+			Role:        "user",
+			Active:      true,
+		}
+		c.Set("user", user)
+
+		req, _ := http.NewRequest(http.MethodGet, "/api/me", nil)
+		c.Request = req
+
+		handler.GetCurrentUser(c)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("expected status %d, got %d", http.StatusOK, w.Code)
+		}
+		var response map[string]any
+		if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+			t.Fatalf("unmarshal response: %v", err)
+		}
+		if response["identifier"] != "testuser" {
+			t.Errorf("expected identifier testuser, got %v", response["identifier"])
+		}
+	})
+
+	t.Run("unauthorized when user not in context", func(t *testing.T) {
+		c, w := setupTestRouter()
+		handler := NewAuthHandler(&MockAuthService{})
+
+		req, _ := http.NewRequest(http.MethodGet, "/api/me", nil)
+		c.Request = req
+
+		handler.GetCurrentUser(c)
+
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("expected status %d, got %d", http.StatusUnauthorized, w.Code)
+		}
+		var response map[string]any
+		if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+			t.Fatalf("unmarshal response: %v", err)
+		}
+		if response["error"] != "não autenticado" {
+			t.Errorf("expected error 'não autenticado', got %v", response["error"])
+		}
+	})
+}

@@ -226,32 +226,17 @@ func (s *AuthService) RequestPasswordReset(emailAddr string) error {
 
 // ResetPassword resets a user's password using a reset token
 func (s *AuthService) ResetPassword(tokenFromUser, newPassword string) error {
-	// Hash the provided token and find matching user
 	hashedToken := s.hashToken(tokenFromUser)
 
-	// Find user with this reset token
-	// This is a simplified implementation - in production you might want
-	// to search by the hashed token directly
-	users, err := s.findUsersWithResetTokens()
-	if err != nil {
-		return err
-	}
-
-	var matchedUser *models.User
-	for _, user := range users {
-		if time.Now().After(user.ResetTokenExpiry) {
-			continue
-		}
-		if user.ResetToken == hashedToken {
-			matchedUser = user
-
-			break
-		}
-	}
-
-	if matchedUser == nil {
+	matchedUser, err := s.userAdapter.FindByResetToken(hashedToken)
+	if err != nil || matchedUser == nil {
 		logger.Warn("Tentativa de reset de senha com token inválido")
 		return ErrInvalidToken
+	}
+
+	if time.Now().After(matchedUser.ResetTokenExpiry) {
+		logger.Warn("Tentativa de reset de senha com token expirado")
+		return ErrExpiredToken
 	}
 
 	// Hash new password
@@ -288,12 +273,6 @@ func (s *AuthService) generateSecureToken(b []byte) (int, error) {
 func (s *AuthService) hashToken(token string) string {
 	hash := sha256.Sum256([]byte(token))
 	return hex.EncodeToString(hash[:])
-}
-
-func (s *AuthService) findUsersWithResetTokens() ([]*models.User, error) {
-	// This method would need to be added to the userAdapter
-	// For now, we'll use a workaround
-	return nil, errors.New("not implemented - use direct DB query")
 }
 
 // ConvertToPublicUser strips sensitive fields from user

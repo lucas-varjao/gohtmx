@@ -4,15 +4,22 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func setupTestConfig(t *testing.T) func() {
-	// Create a temporary config file for testing
+// setupTestConfigDir creates a temp dir with app.yml and returns the dir and a cleanup function.
+// Tests use LoadConfigFromPath(dir) so ./configs is never touched.
+func setupTestConfigDir(t *testing.T) (string, func()) {
+	t.Helper()
+	dir, err := os.MkdirTemp("", "gohtmx-config-test-*")
+	require.NoError(t, err)
+
 	configContent := `
 server:
   port: 8080
@@ -24,69 +31,64 @@ jwt:
   refresh_token_ttl: 24h
   issuer: "gohtmx-test"
 `
-	err := os.MkdirAll("./configs", 0755)
-	assert.NoError(t, err)
+	err = os.WriteFile(filepath.Join(dir, "app.yml"), []byte(configContent), 0644)
+	require.NoError(t, err)
 
-	err = os.WriteFile("./configs/app.yml", []byte(configContent), 0644)
-	assert.NoError(t, err)
-
-	// Return cleanup function
-	return func() {
-		os.RemoveAll("./configs")
-		// Reset viper to avoid interference between tests
+	cleanup := func() {
+		_ = os.RemoveAll(dir)
 		viper.Reset()
 		cfg = nil
 	}
+	return dir, cleanup
 }
 
 func TestLoadConfig(t *testing.T) {
-	cleanup := setupTestConfig(t)
+	dir, cleanup := setupTestConfigDir(t)
 	defer cleanup()
 
-	config, err := LoadConfig()
-	assert.NoError(t, err)
-	assert.NotNil(t, config)
+	c, err := LoadConfigFromPath(dir)
+	require.NoError(t, err)
+	require.NotNil(t, c)
 
-	// Verify loaded values
-	assert.Equal(t, 8080, config.Server.Port)
-	assert.Equal(t, "test.db", config.Database.DSN)
-	assert.Equal(t, "test-secret-key", config.JWT.SecretKey)
-	assert.Equal(t, 15*time.Minute, config.JWT.AccessTokenTTL)
-	assert.Equal(t, 24*time.Hour, config.JWT.RefreshTokenTTL)
-	assert.Equal(t, "gohtmx-test", config.JWT.Issuer)
+	assert.Equal(t, 8080, c.Server.Port)
+	assert.Equal(t, "test.db", c.Database.DSN)
+	assert.Equal(t, "test-secret-key", c.JWT.SecretKey)
+	assert.Equal(t, 15*time.Minute, c.JWT.AccessTokenTTL)
+	assert.Equal(t, 24*time.Hour, c.JWT.RefreshTokenTTL)
+	assert.Equal(t, "gohtmx-test", c.JWT.Issuer)
 }
 
 func TestLoadConfigError(t *testing.T) {
-	// Reset viper to avoid interference from other tests
 	viper.Reset()
 	cfg = nil
+	defer func() { viper.Reset(); cfg = nil }()
 
-	// Test with non-existent config file
-	config, err := LoadConfig()
+	// Dir exists but has no app.yml
+	dir, err := os.MkdirTemp("", "gohtmx-config-empty-*")
+	require.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	c, err := LoadConfigFromPath(dir)
 	assert.Error(t, err)
-	assert.Nil(t, config)
+	assert.Nil(t, c)
 }
 
 func TestGetConfig(t *testing.T) {
-	cleanup := setupTestConfig(t)
+	dir, cleanup := setupTestConfigDir(t)
 	defer cleanup()
 
-	// First, load the config
-	_, err := LoadConfig()
-	assert.NoError(t, err)
+	_, err := LoadConfigFromPath(dir)
+	require.NoError(t, err)
 
-	// Then get it
-	config := GetConfig()
-	assert.NotNil(t, config)
-	assert.Equal(t, 8080, config.Server.Port)
+	c := GetConfig()
+	require.NotNil(t, c)
+	assert.Equal(t, 8080, c.Server.Port)
 }
 
 func TestGetConfigBeforeLoad(t *testing.T) {
-	// Reset viper and cfg
 	viper.Reset()
 	cfg = nil
+	defer func() { viper.Reset(); cfg = nil }()
 
-	// GetConfig should return nil if LoadConfig hasn't been called
-	config := GetConfig()
-	assert.Nil(t, config)
+	assert.Nil(t, GetConfig())
 }

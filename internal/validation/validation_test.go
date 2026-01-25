@@ -3,6 +3,7 @@
 package validation
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -167,6 +168,94 @@ func TestValidateRegistrationRequest(t *testing.T) {
 			err := ValidateRegistrationRequest(tt.username, tt.email, tt.password, tt.displayName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ValidateRegistrationRequest() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestValidateResetToken(t *testing.T) {
+	tests := []struct {
+		name    string
+		token   string
+		wantErr error
+	}{
+		{"Valid token", "a1234567890", nil},
+		{"Empty token", "", ErrResetTokenInvalid},
+		{"Too short", "short", ErrResetTokenInvalid},
+		{"Exactly 10 chars", "1234567890", nil},
+		{"9 chars is invalid", "123456789", ErrResetTokenInvalid},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateResetToken(tt.token)
+			if err != tt.wantErr {
+				t.Errorf("ValidateResetToken() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestValidatePasswordReset(t *testing.T) {
+	tests := []struct {
+		name            string
+		token           string
+		newPassword     string
+		confirmPassword string
+		wantErr         bool
+		errContains     string // optional: substring to check in error message
+	}{
+		{
+			name:            "Valid reset",
+			token:           "validtoken12",
+			newPassword:     "NewSecure123!",
+			confirmPassword: "NewSecure123!",
+			wantErr:         false,
+		},
+		{
+			name:            "Invalid token empty",
+			token:           "",
+			newPassword:     "NewSecure123!",
+			confirmPassword: "NewSecure123!",
+			wantErr:         true,
+			errContains:     "token",
+		},
+		{
+			name:            "Invalid token too short",
+			token:           "short",
+			newPassword:     "NewSecure123!",
+			confirmPassword: "NewSecure123!",
+			wantErr:         true,
+			errContains:     "token",
+		},
+		{
+			name:            "Passwords do not match",
+			token:           "validtoken12",
+			newPassword:     "NewSecure123!",
+			confirmPassword: "OtherPass123!",
+			wantErr:         true,
+			errContains:     "coincidem",
+		},
+		{
+			name:            "Weak new password",
+			token:           "validtoken12",
+			newPassword:     "weak",
+			confirmPassword: "weak",
+			wantErr:         true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidatePasswordReset(tt.token, tt.newPassword, tt.confirmPassword)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ValidatePasswordReset() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if tt.wantErr && tt.errContains != "" && err != nil {
+				if !strings.Contains(err.Error(), tt.errContains) {
+					t.Errorf("ValidatePasswordReset() error = %v, want message containing %q", err.Error(), tt.errContains)
+				}
 			}
 		})
 	}

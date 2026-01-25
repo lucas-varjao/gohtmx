@@ -137,12 +137,12 @@ func TestPasswordResetFlow(t *testing.T) {
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	// Verify reset token was set
+	// Verify reset token was set in the in-memory DB (option B)
 	var updatedUser models.User
 	err = db.First(&updatedUser, user.ID).Error
 	require.NoError(t, err)
-	// Note: In the new system, password reset still works but the token verification
-	// is handled differently. The test verifies the request was accepted.
+	assert.NotEmpty(t, updatedUser.ResetToken, "reset token should be set after password-reset-request")
+	assert.False(t, updatedUser.ResetTokenExpiry.IsZero(), "reset token expiry should be set")
 }
 
 func TestGetCurrentUser(t *testing.T) {

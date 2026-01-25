@@ -52,10 +52,26 @@ type Config struct {
 
 var cfg *Config
 
+// defaultConfigPath is used when LoadConfig is called with no path.
+const defaultConfigPath = "./configs"
+
+// LoadConfig loads config from the default path (./configs). For tests or custom paths, use LoadConfigFromPath.
 func LoadConfig() (*Config, error) {
+	return LoadConfigFromPath(defaultConfigPath)
+}
+
+// LoadConfigFromPath loads config from the given directory (must contain app.yml).
+// Pass "" to use defaultConfigPath. Used by tests with a temp dir to avoid touching ./configs.
+// Resets viper state so only the given path is used (no leftover paths from previous loads).
+func LoadConfigFromPath(configPath string) (*Config, error) {
+	viper.Reset()
+	if configPath == "" {
+		configPath = defaultConfigPath
+	}
+
 	viper.SetConfigName("app")
 	viper.SetConfigType("yml")
-	viper.AddConfigPath("./configs")
+	viper.AddConfigPath(configPath)
 
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("falha ao ler o arquivo de configuração: %w", err)

@@ -144,6 +144,18 @@ func (a *UserAdapter) FindByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
+// FindByResetToken finds a user by hashed reset token. Caller must check ResetTokenExpiry for expiry.
+func (a *UserAdapter) FindByResetToken(hashedToken string) (*models.User, error) {
+	if hashedToken == "" {
+		return nil, gorm.ErrRecordNotFound
+	}
+	var user models.User
+	if err := a.db.Where("reset_token = ?", hashedToken).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 // UpdateUser saves changes to user model
 func (a *UserAdapter) UpdateUser(user *models.User) error {
 	if err := a.db.Save(user).Error; err != nil {
