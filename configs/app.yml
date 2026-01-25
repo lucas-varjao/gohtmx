@@ -1,0 +1,17 @@
+# gowebly/configs/app.yml
+
+server:
+    port: 7000  # Default gowebly port, can be changed to 8080
+database:
+    dsn: 'gohtmx.db'
+log:
+    level: 'info' # debug, info, warn, error
+    format: 'text' # json, text
+email:
+    smtp_host: 'sandbox.smtp.mailtrap.io'
+    smtp_port: 587
+    smtp_username: 'da92b160236933'
+    smtp_password: '' # Em produção, use variáveis de ambiente
+    from_email: 'no-reply@gohtmx.com'
+    from_name: 'GoHTMX'
+    reset_url: 'http://localhost:5173/reset-password?token=' # URL base para links de recuperação
