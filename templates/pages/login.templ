@@ -2,9 +2,9 @@ package pages
 
 // LoginPage renders the login page
 templ LoginPage(errorMessage string) {
-	<div class="card bg-base-100 shadow-xl">
+	<div class="card bg-base-100 shadow-xl text-base-content">
 		<div class="card-body">
-			<h1 class="card-title text-3xl mb-4">Entrar</h1>
+			<h1 class="card-title text-3xl mb-4 text-base-content">Entrar</h1>
 			
 			if errorMessage != "" {
 				<div class="alert alert-error mb-4">

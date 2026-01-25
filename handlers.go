@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/angelofallars/htmx-go"
 
@@ -13,35 +14,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// indexViewHandler handles a view for the index page.
+// indexViewHandler handles a view for the index page (stack demo + links to Login/Register).
 func indexViewHandler(c *gin.Context) {
+	generatedAt := time.Now().Format("02/01/2006 15:04:05")
 
-	// Define template meta tags.
 	metaTags := pages.MetaTags(
-		"gowebly, htmx example page, go with htmx",               // define meta keywords
-		"Welcome to example! You're here because it worked out.", // define meta description
+		"GoHTMX, Go, TEMPL, HTMX, Alpine.js, Tailwind, DaisyUI, demo, stack",
+		"Página de demonstração da stack: Go, TEMPL, HTMX, Alpine.js, Tailwind e DaisyUI.",
 	)
 
-	// Define template body content.
-	bodyContent := pages.BodyContent(
-		"Welcome to example!",                // define h1 text
-		"You're here because it worked out.", // define p text
-	)
+	bodyContent := pages.IndexPage(generatedAt)
 
-	// Define template layout for index page.
 	indexTemplate := templates.Layout(
-		"Welcome to example!", // define title text
-		metaTags,              // define meta tags
-		bodyContent,           // define body content
+		"GoHTMX — Stack demo",
+		metaTags,
+		bodyContent,
 	)
 
-	// Render index page template.
 	if err := htmx.NewResponse().RenderTempl(c.Request.Context(), c.Writer, indexTemplate); err != nil {
-		// If not, return HTTP 500 error.
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-
 }
 
 // showContentAPIHandler handles an API endpoint to show content.

@@ -30,7 +30,7 @@ func RegisterPage(errorMessage string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"card bg-base-100 shadow-xl\"><div class=\"card-body\"><h1 class=\"card-title text-3xl mb-4\">Criar Conta</h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"card bg-base-100 shadow-xl text-base-content\"><div class=\"card-body\"><h1 class=\"card-title text-3xl mb-4 text-base-content\">Criar Conta</h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
