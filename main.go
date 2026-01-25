@@ -13,7 +13,7 @@ import (
 	"github.com/lucas-varjao/gohtmx/internal/service"
 
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -41,8 +41,8 @@ func main() {
 
 	dbDSN := cfg.Database.DSN
 
-	// Connect to SQLite
-	db, err := gorm.Open(sqlite.Open(dbDSN), &gorm.Config{})
+	// Connect to PostgreSQL
+	db, err := gorm.Open(postgres.Open(dbDSN), &gorm.Config{})
 	if err != nil {
 		logger.Error("Falha ao conectar ao banco de dados", "error", err, "dsn", dbDSN)
 		os.Exit(1)

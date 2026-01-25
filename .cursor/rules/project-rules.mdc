@@ -12,7 +12,7 @@ GoHTMX is a template/base project designed as an alternative to heavy JavaScript
 - **Framework**: Golang with Gin
 - **Template Engine**: TEMPL (Go 1.23+)
 - **Authentication**: Session-based (pluggable adapters inspired by Lucia Auth)
-- **Database**: SQLite (via GORM)
+- **Database**: PostgreSQL (via GORM)
 - **ORM**: GORM for database operations
 - **Logging**: Zap
 - **Config**: Viper

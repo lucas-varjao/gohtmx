@@ -32,7 +32,7 @@ Este template oferece uma alternativa aos frameworks JavaScript pesados:
 - **Template Engine**: TEMPL (server-side rendering)
 - **Autenticação plugável** com adapters (estilo Lucia Auth)
 - Sessões armazenadas no banco de dados
-- Banco de dados SQLite com GORM
+- Banco de dados PostgreSQL com GORM
 - Estrutura modular e escalável
 - Middleware de autenticação
 - API RESTful com Gin
@@ -190,11 +190,13 @@ Edite o arquivo `backend/configs/app.yml` para ajustar as configurações:
 server:
     port: 8080
 database:
-    dsn: 'gohtmx.db'
+    dsn: 'host=localhost user=gohtmx password=gohtmx dbname=gohtmx port=5432 sslmode=disable TimeZone=UTC'
 log:
     level: 'info'
     format: 'text'
 ```
+
+Em produção, defina a variável de ambiente `DATABASE_DSN` para sobrescrever o DSN do arquivo.
 
 ## 🔄 Começando um Novo Projeto
 

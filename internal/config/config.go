@@ -61,6 +61,10 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("falha ao ler o arquivo de configuração: %w", err)
 	}
 
+	// DATABASE_DSN env overrides config file when set
+	viper.AutomaticEnv()
+	_ = viper.BindEnv("database.dsn", "DATABASE_DSN")
+
 	cfg = &Config{}
 	if err := viper.Unmarshal(cfg); err != nil {
 		return nil, fmt.Errorf("falha ao carregar as configurações: %w", err)
