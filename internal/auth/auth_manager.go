@@ -50,6 +50,7 @@ func NewAuthManager(userAdapter UserAdapter, sessionAdapter SessionAdapter, conf
 	if config == nil {
 		config = DefaultAuthConfig()
 	}
+
 	return &AuthManager{
 		userAdapter:    userAdapter,
 		sessionAdapter: sessionAdapter,
@@ -69,6 +70,7 @@ func (m *AuthManager) Login(identifier, password string, metadata SessionMetadat
 	user, err := m.userAdapter.ValidateCredentials(identifier, password)
 	if err != nil {
 		m.recordFailedAttempt(identifier)
+
 		return nil, nil, err
 	}
 
@@ -85,10 +87,12 @@ func (m *AuthManager) Login(identifier, password string, metadata SessionMetadat
 	session, err := m.sessionAdapter.CreateSession(user.ID, expiresAt, metadata)
 	if err != nil {
 		logger.Error("Erro ao criar sessão após login", "error", err, "user_id", user.ID)
+
 		return nil, nil, err
 	}
 
 	session.Fresh = true
+
 	return session, user, nil
 }
 
@@ -103,6 +107,7 @@ func (m *AuthManager) ValidateSession(sessionID string) (*Session, *UserData, er
 	if time.Now().After(session.ExpiresAt) {
 		// Clean up expired session
 		_ = m.sessionAdapter.DeleteSession(sessionID)
+
 		return nil, nil, ErrSessionExpired
 	}
 
@@ -110,6 +115,7 @@ func (m *AuthManager) ValidateSession(sessionID string) (*Session, *UserData, er
 	user, err := m.userAdapter.FindUserByID(session.UserID)
 	if err != nil {
 		logger.Error("Erro ao buscar usuário durante validação de sessão", "error", err, "session_id", sessionID, "user_id", session.UserID)
+
 		return nil, nil, err
 	}
 
@@ -139,8 +145,10 @@ func (m *AuthManager) ValidateSession(sessionID string) (*Session, *UserData, er
 func (m *AuthManager) Logout(sessionID string) error {
 	if err := m.sessionAdapter.DeleteSession(sessionID); err != nil {
 		logger.Error("Erro ao fazer logout", "error", err, "session_id", sessionID)
+
 		return err
 	}
+
 	return nil
 }
 
@@ -148,9 +156,11 @@ func (m *AuthManager) Logout(sessionID string) error {
 func (m *AuthManager) LogoutAll(userID string) error {
 	if err := m.sessionAdapter.DeleteUserSessions(userID); err != nil {
 		logger.Error("Erro ao fazer logout de todas as sessões", "error", err, "user_id", userID)
+
 		return err
 	}
 	logger.Info("Todas as sessões do usuário foram invalidadas", "user_id", userID)
+
 	return nil
 }
 

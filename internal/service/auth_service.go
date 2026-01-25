@@ -75,9 +75,11 @@ func (s *AuthService) Login(username, password, ip, userAgent string) (*LoginRes
 		switch {
 		case errors.Is(err, auth.ErrInvalidCredentials):
 			logger.Warn("Tentativa de login com credenciais inválidas", "username", username, "ip", ip)
+
 			return nil, ErrInvalidCredentials
 		case errors.Is(err, auth.ErrUserNotActive):
 			logger.Warn("Tentativa de login com usuário inativo", "username", username, "ip", ip)
+
 			return nil, ErrUserNotActive
 		case errors.Is(err, auth.ErrAccountLocked):
 			logger.Warn("Tentativa de login com conta bloqueada", "username", username, "ip", ip)
@@ -89,6 +91,7 @@ func (s *AuthService) Login(username, password, ip, userAgent string) (*LoginRes
 	}
 
 	logger.Info("Login realizado com sucesso", "user_id", user.ID, "username", username, "ip", ip)
+
 	return &LoginResponse{
 		SessionID: session.ID,
 		ExpiresAt: session.ExpiresAt,
@@ -241,6 +244,7 @@ func (s *AuthService) ResetPassword(tokenFromUser, newPassword string) error {
 		}
 		if user.ResetToken == hashedToken {
 			matchedUser = user
+
 			break
 		}
 	}

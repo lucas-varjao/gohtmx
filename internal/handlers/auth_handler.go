@@ -29,6 +29,7 @@ func renderTemplError(c *gin.Context, status int, component templ.Component) {
 	if err := component.Render(context.Background(), &buf); err != nil {
 		logger.Error("Erro ao renderizar componente de erro", "error", err)
 		c.String(http.StatusInternalServerError, "Erro ao processar resposta")
+
 		return
 	}
 	// Determine target based on request path
@@ -78,10 +79,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		if c.GetHeader("HX-Request") != "" {
 			errorAlert := pages.ErrorAlert(err.Error())
 			renderTemplError(c, http.StatusBadRequest, errorAlert)
+
 			return
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return
 	}
 
@@ -89,6 +92,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	if err := validation.ValidateLoginRequest(req.Username, req.Password); err != nil {
 		logger.Debug("Requisição de login com validação falhada", "error", err, "username", req.Username, "ip", getClientIP(c))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return
 	}
 
@@ -113,10 +117,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		if c.GetHeader("HX-Request") != "" {
 			errorAlert := pages.ErrorAlert(message)
 			renderTemplError(c, status, errorAlert)
+
 			return
 		}
 
 		c.JSON(status, gin.H{"error": message})
+
 		return
 	}
 

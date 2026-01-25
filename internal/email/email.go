@@ -106,6 +106,7 @@ func (s *EmailService) SendPasswordResetEmail(to, token, username, displayName s
 	t, err := template.New("reset_email").Parse(htmlBody)
 	if err != nil {
 		logger.Error("Erro ao analisar template de email", "error", err, "email", to)
+
 		return fmt.Errorf("erro ao analisar template: %w", err)
 	}
 
@@ -113,16 +114,19 @@ func (s *EmailService) SendPasswordResetEmail(to, token, username, displayName s
 	var body bytes.Buffer
 	if err := t.Execute(&body, data); err != nil {
 		logger.Error("Erro ao executar template de email", "error", err, "email", to)
+
 		return fmt.Errorf("erro ao executar template: %w", err)
 	}
 
 	// Enviamos o email usando a função auxiliar
 	if err := s.sendEmail(to, subject, body.String()); err != nil {
 		logger.Error("Erro ao enviar email via SMTP", "error", err, "email", to, "smtp_host", s.config.SMTPHost)
+
 		return err
 	}
 
 	logger.Debug("Email de recuperação de senha enviado com sucesso", "email", to)
+
 	return nil
 }
 
@@ -167,7 +171,9 @@ func (s *EmailService) sendEmail(to, subject, htmlBody string) error {
 		message.Bytes(),
 	); err != nil {
 		logger.Error("Erro ao enviar email via SMTP", "error", err, "to", to, "addr", addr)
+
 		return err
 	}
+
 	return nil
 }

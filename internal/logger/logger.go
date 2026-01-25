@@ -47,6 +47,7 @@ func Get() *slog.Logger {
 		// Fallback to default if not initialized
 		Init("info", "text")
 	}
+
 	return defaultLogger
 }
 

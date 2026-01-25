@@ -58,6 +58,7 @@ func (m *MockEmailService) GetSentEmails() []MockEmail {
 	// Return a copy to avoid race conditions
 	result := make([]MockEmail, len(m.sentEmails))
 	copy(result, m.sentEmails)
+
 	return result
 }
 

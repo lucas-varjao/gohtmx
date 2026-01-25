@@ -87,7 +87,7 @@ func TestAuthHandler_Login(t *testing.T) {
 		request        LoginRequest
 		setupMock      func(*MockAuthService)
 		expectedStatus int
-		expectedBody   map[string]interface{}
+		expectedBody   map[string]any
 	}{
 		{
 			name: "Successful login",
@@ -108,7 +108,7 @@ func TestAuthHandler_Login(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusOK,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"session_id": "test-session-id",
 			},
 		},
@@ -124,7 +124,7 @@ func TestAuthHandler_Login(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusUnauthorized,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"error": "credenciais inválidas",
 			},
 		},
@@ -140,7 +140,7 @@ func TestAuthHandler_Login(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusUnauthorized,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"error": "usuário inativo",
 			},
 		},
@@ -156,7 +156,7 @@ func TestAuthHandler_Login(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusUnauthorized,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"error": "conta temporariamente bloqueada, tente novamente mais tarde",
 			},
 		},
@@ -186,7 +186,7 @@ func TestAuthHandler_Login(t *testing.T) {
 			}
 
 			// Check response body
-			var response map[string]interface{}
+			var response map[string]any
 			if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
 				t.Fatalf("Failed to unmarshal response: %v", err)
 			}
@@ -209,7 +209,7 @@ func TestAuthHandler_Logout(t *testing.T) {
 		setupContext   func(*gin.Context)
 		setupMock      func(*MockAuthService)
 		expectedStatus int
-		expectedBody   map[string]interface{}
+		expectedBody   map[string]any
 	}{
 		{
 			name: "Successful logout",
@@ -223,7 +223,7 @@ func TestAuthHandler_Logout(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusOK,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"message": "logout realizado com sucesso",
 			},
 		},
@@ -238,7 +238,7 @@ func TestAuthHandler_Logout(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusUnauthorized,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"error": "não autenticado",
 			},
 		},
@@ -265,7 +265,7 @@ func TestAuthHandler_Logout(t *testing.T) {
 			}
 
 			// Check response body
-			var response map[string]interface{}
+			var response map[string]any
 			if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
 				t.Fatalf("Failed to unmarshal response: %v", err)
 			}
@@ -287,7 +287,7 @@ func TestAuthHandler_Register(t *testing.T) {
 		request        RegistrationRequest
 		setupMock      func(*MockAuthService)
 		expectedStatus int
-		expectedBody   map[string]interface{}
+		expectedBody   map[string]any
 	}{
 		{
 			name: "Successful registration",
@@ -307,7 +307,7 @@ func TestAuthHandler_Register(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusOK,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"username": "newuser",
 				"email":    "new@example.com",
 			},
@@ -326,7 +326,7 @@ func TestAuthHandler_Register(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusBadRequest,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"error": "username already exists",
 			},
 		},
@@ -356,7 +356,7 @@ func TestAuthHandler_Register(t *testing.T) {
 			}
 
 			// Check response body
-			var response map[string]interface{}
+			var response map[string]any
 			if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
 				t.Fatalf("Failed to unmarshal response: %v", err)
 			}
@@ -375,15 +375,15 @@ func TestAuthHandler_Register(t *testing.T) {
 func TestAuthHandler_RequestPasswordReset(t *testing.T) {
 	tests := []struct {
 		name           string
-		requestBody    map[string]interface{}
+		requestBody    map[string]any
 		setupMock      func(*MockAuthService)
 		expectedStatus int
-		expectedBody   interface{}
-		checkBody      func(t *testing.T, body map[string]interface{})
+		expectedBody   any
+		checkBody      func(t *testing.T, body map[string]any)
 	}{
 		{
 			name: "Successful password reset request",
-			requestBody: map[string]interface{}{
+			requestBody: map[string]any{
 				"email": "test@example.com",
 			},
 			setupMock: func(m *MockAuthService) {
@@ -392,13 +392,13 @@ func TestAuthHandler_RequestPasswordReset(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusOK,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"message": "se o email existir, um link de recuperação será enviado",
 			},
 		},
 		{
 			name: "Invalid email format",
-			requestBody: map[string]interface{}{
+			requestBody: map[string]any{
 				"email": "invalid-email",
 			},
 			setupMock: func(m *MockAuthService) {
@@ -407,7 +407,7 @@ func TestAuthHandler_RequestPasswordReset(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusBadRequest,
-			checkBody: func(t *testing.T, body map[string]interface{}) {
+			checkBody: func(t *testing.T, body map[string]any) {
 				if !contains(body["error"].(string), "validation") && !contains(body["error"].(string), "email") {
 					t.Errorf("expected error message to mention email validation, got: %v", body["error"])
 				}
@@ -439,13 +439,13 @@ func TestAuthHandler_RequestPasswordReset(t *testing.T) {
 			}
 
 			// Check response body
-			var response map[string]interface{}
+			var response map[string]any
 			if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
 				t.Fatalf("Failed to unmarshal response: %v", err)
 			}
 
 			if tt.expectedBody != nil {
-				expectedBody := tt.expectedBody.(map[string]interface{})
+				expectedBody := tt.expectedBody.(map[string]any)
 				for key, expectedValue := range expectedBody {
 					if actualValue, exists := response[key]; !exists {
 						t.Errorf("expected response to contain %s", key)
@@ -473,7 +473,7 @@ func TestAuthHandler_ResetPassword(t *testing.T) {
 		request        PasswordResetRequest
 		setupMock      func(*MockAuthService)
 		expectedStatus int
-		expectedBody   map[string]interface{}
+		expectedBody   map[string]any
 	}{
 		{
 			name: "Successful password reset",
@@ -488,7 +488,7 @@ func TestAuthHandler_ResetPassword(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusOK,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"message": "senha redefinida com sucesso",
 			},
 		},
@@ -505,7 +505,7 @@ func TestAuthHandler_ResetPassword(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusBadRequest,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"error": "token inválido",
 			},
 		},
@@ -522,7 +522,7 @@ func TestAuthHandler_ResetPassword(t *testing.T) {
 				}
 			},
 			expectedStatus: http.StatusBadRequest,
-			expectedBody: map[string]interface{}{
+			expectedBody: map[string]any{
 				"error": "token expirado",
 			},
 		},
@@ -552,7 +552,7 @@ func TestAuthHandler_ResetPassword(t *testing.T) {
 			}
 
 			// Check response body
-			var response map[string]interface{}
+			var response map[string]any
 			if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
 				t.Fatalf("Failed to unmarshal response: %v", err)
 			}

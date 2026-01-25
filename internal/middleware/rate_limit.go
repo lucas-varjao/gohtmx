@@ -65,6 +65,7 @@ func RateLimitMiddleware(limiter *IPRateLimiter) gin.HandlerFunc {
 				"error": "limite de requisições excedido",
 			})
 			c.Abort()
+
 			return
 		}
 

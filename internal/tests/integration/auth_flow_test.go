@@ -54,7 +54,7 @@ func TestCompleteAuthFlow(t *testing.T) {
 	r, _, _ := setupIntegrationTest(t)
 
 	// 1. Register user
-	registration := map[string]interface{}{
+	registration := map[string]any{
 		"username":     "testuser",
 		"email":        "test@example.com",
 		"password":     "Test123!@#",
@@ -68,7 +68,7 @@ func TestCompleteAuthFlow(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	// 2. Login
-	login := map[string]interface{}{
+	login := map[string]any{
 		"username": "testuser",
 		"password": "Test123!@#",
 	}
@@ -79,7 +79,7 @@ func TestCompleteAuthFlow(t *testing.T) {
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var loginResponse map[string]interface{}
+	var loginResponse map[string]any
 	err := json.Unmarshal(w.Body.Bytes(), &loginResponse)
 	require.NoError(t, err)
 	sessionID := loginResponse["session_id"].(string)
@@ -127,7 +127,7 @@ func TestPasswordResetFlow(t *testing.T) {
 	require.NoError(t, err)
 
 	// 2. Request password reset
-	resetRequest := map[string]interface{}{
+	resetRequest := map[string]any{
 		"email": "reset@example.com",
 	}
 	w := httptest.NewRecorder()
@@ -150,7 +150,7 @@ func TestGetCurrentUser(t *testing.T) {
 	r, _, _ := setupIntegrationTest(t)
 
 	// 1. Register and login
-	registration := map[string]interface{}{
+	registration := map[string]any{
 		"username":     "meuser",
 		"email":        "me@example.com",
 		"password":     "Test123!@#",
@@ -162,7 +162,7 @@ func TestGetCurrentUser(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
-	login := map[string]interface{}{
+	login := map[string]any{
 		"username": "meuser",
 		"password": "Test123!@#",
 	}
@@ -172,7 +172,7 @@ func TestGetCurrentUser(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
 
-	var loginResponse map[string]interface{}
+	var loginResponse map[string]any
 	json.Unmarshal(w.Body.Bytes(), &loginResponse)
 	sessionID := loginResponse["session_id"].(string)
 
@@ -183,7 +183,7 @@ func TestGetCurrentUser(t *testing.T) {
 	r.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var userResponse map[string]interface{}
+	var userResponse map[string]any
 	err := json.Unmarshal(w.Body.Bytes(), &userResponse)
 	require.NoError(t, err)
 	assert.Equal(t, "meuser", userResponse["identifier"])

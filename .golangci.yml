@@ -1,4 +1,4 @@
-version: "2"
+version: '2'
 run:
   tests: false
 linters:
@@ -20,16 +20,23 @@ linters:
     - govet
     - ineffassign
     - lll
+    - loggercheck
     - misspell
     - mnd
+    - modernize
     - nakedret
     - nilerr
     - nilnil
+    # - nlreturn
     - noctx
     - nolintlint
     - revive
+    - rowserrcheck
+    - sloglint
     - staticcheck
+    - sqlclosecheck
     - tagalign
+    - tagliatelle
     - unconvert
     - unparam
     - unused
@@ -82,6 +89,10 @@ linters:
         - db
         - validate
       strict: true
+    tagliatelle:
+      case:
+        rules:
+          json: snake
   exclusions:
     generated: lax
     presets:

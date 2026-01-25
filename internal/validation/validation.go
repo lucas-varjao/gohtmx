@@ -105,6 +105,7 @@ func ValidatePassword(password, username string) error {
 		strings.Contains(strings.ToLower(password), strings.ToLower(username)) {
 		return ErrPasswordContainsUser
 	}
+
 	return nil
 }
 
@@ -128,6 +129,7 @@ func validatePasswordChars(password string) error {
 	if !hasSpecial {
 		return ErrPasswordNoSpecial
 	}
+
 	return nil
 }
 
@@ -138,6 +140,7 @@ func isCommonPassword(password string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -159,6 +162,7 @@ func ValidateRefreshToken(token string) error {
 	if token == "" || len(token) < 10 {
 		return ErrRefreshTokenInvalid
 	}
+
 	return nil
 }
 
@@ -167,6 +171,7 @@ func ValidateResetToken(token string) error {
 	if token == "" || len(token) < 10 {
 		return ErrResetTokenInvalid
 	}
+
 	return nil
 }
 

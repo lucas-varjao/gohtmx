@@ -33,6 +33,7 @@ func AuthMiddleware(authManager *auth.AuthManager) gin.HandlerFunc {
 		if sessionID == "" {
 			logger.Debug("Requisição sem sessão", "path", c.Request.URL.Path, "ip", c.ClientIP())
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "autorização necessária"})
+
 			return
 		}
 
@@ -55,6 +56,7 @@ func AuthMiddleware(authManager *auth.AuthManager) gin.HandlerFunc {
 				logger.Error("Erro ao validar sessão", "error", err, "session_id", sessionID, "ip", c.ClientIP())
 			}
 			c.AbortWithStatusJSON(status, gin.H{"error": message})
+
 			return
 		}
 
@@ -82,12 +84,14 @@ func RoleMiddleware(roles ...string) gin.HandlerFunc {
 		userRole, exists := c.Get("role")
 		if !exists {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "usuário não autenticado"})
+
 			return
 		}
 
 		for _, role := range roles {
 			if role == userRole {
 				c.Next()
+
 				return
 			}
 		}

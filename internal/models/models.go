@@ -21,10 +21,10 @@ type User struct {
 	LastName  string `json:"last_name,omitempty"`
 
 	// Account status
-	Active        bool      `json:"active"                gorm:"default:true"`
-	EmailVerified bool      `json:"email_verified"        gorm:"default:false"`
-	LastLogin     time.Time `json:"last_login,omitempty"`
-	LastActive    time.Time `json:"last_active,omitempty"`
+	Active        bool      `json:"active"         gorm:"default:true"`
+	EmailVerified bool      `json:"email_verified" gorm:"default:false"`
+	LastLogin     time.Time `json:"last_login"`
+	LastActive    time.Time `json:"last_active"`
 
 	// Access control
 	Role        string `json:"role"                  gorm:"default:user"`

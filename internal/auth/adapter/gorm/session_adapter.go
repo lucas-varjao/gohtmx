@@ -28,6 +28,7 @@ func (a *SessionAdapter) CreateSession(userID string, expiresAt time.Time, metad
 	uid, err := strconv.ParseUint(userID, 10, 64)
 	if err != nil {
 		logger.Error("Erro ao parsear userID para criar sessão", "error", err, "user_id", userID)
+
 		return nil, err
 	}
 
@@ -35,6 +36,7 @@ func (a *SessionAdapter) CreateSession(userID string, expiresAt time.Time, metad
 	sessionID, err := auth.GenerateSessionID()
 	if err != nil {
 		logger.Error("Erro ao gerar ID de sessão", "error", err, "user_id", userID)
+
 		return nil, err
 	}
 
@@ -49,6 +51,7 @@ func (a *SessionAdapter) CreateSession(userID string, expiresAt time.Time, metad
 
 	if err := a.db.Create(session).Error; err != nil {
 		logger.Error("Erro ao criar sessão no banco de dados", "error", err, "user_id", userID, "session_id", sessionID)
+
 		return nil, err
 	}
 
