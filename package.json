@@ -17,12 +17,13 @@
     "htmx.org": "latest"
   },
   "devDependencies": {
-    "@tailwindcss/forms": "latest",
-    "@tailwindcss/typography": "latest",
-    "@tailwindcss/postcss": "latest",
     "@parcel/transformer-css": "latest",
+    "@tailwindcss/forms": "latest",
+    "@tailwindcss/postcss": "latest",
+    "@tailwindcss/typography": "latest",
     "parcel": "latest",
     "postcss": "latest",
-    "prettier": "latest"
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2"
   }
 }
