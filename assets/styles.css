@@ -1,21 +1,62 @@
+@import './theme.css';
 @import 'tailwindcss' source('../templates');
+
+/* Tailwind: brand colors as utilities (bg-smart-navy, text-future-blue, etc.) */
+@theme {
+  --color-smart-navy: var(--smart-navy);
+  --color-future-blue: var(--future-blue);
+  --color-future-blue-150: var(--future-blue-150);
+  --color-future-blue-50: var(--future-blue-50);
+  --color-turquoise: var(--turquoise);
+  --color-green: var(--green);
+  --color-yellow: var(--yellow);
+  --color-orange: var(--orange);
+  --color-orange-100: var(--orange-100);
+  --color-text-gray: var(--text-gray);
+  --color-gray-50: var(--gray-50);
+}
+
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
-
 @plugin 'daisyui';
 
-/* User styles */
-
-/* Sem color/background aqui: o tema dark (data-theme="dark") define tudo */
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Smart Navy dark theme (data-theme="smartnavy"); tokens from theme.css */
+@plugin "daisyui/theme" {
+  name: 'smartnavy';
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+  --color-primary: var(--future-blue);
+  --color-primary-content: var(--white);
+  --color-secondary: var(--green);
+  --color-secondary-content: var(--white);
+  --color-accent: var(--turquoise);
+  --color-accent-content: var(--smart-navy);
+  --color-neutral: var(--text-gray);
+  --color-neutral-content: var(--gray-50);
+  --color-base-100: var(--smart-navy);
+  --color-base-200: var(--base-200);
+  --color-base-300: var(--base-300);
+  --color-base-content: var(--gray-50);
+  --color-info: var(--future-blue-50);
+  --color-info-content: var(--smart-navy);
+  --color-success: var(--green);
+  --color-success-content: var(--white);
+  --color-warning: var(--yellow);
+  --color-warning-content: var(--smart-navy);
+  --color-error: var(--orange-100);
+  --color-error-content: var(--white);
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.25rem;
+  --size-selector: 0.28125rem;
+  --size-field: 0.28125rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
 }
+
+/* User styles (color/background come from theme smartnavy) */
 
 /* Base body layout only; color/background come from Tailwind/DaisyUI utilities */
 body {
