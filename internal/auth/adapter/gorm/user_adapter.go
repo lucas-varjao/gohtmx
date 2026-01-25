@@ -2,6 +2,7 @@
 package gorm
 
 import (
+	"errors"
 	"strconv"
 	"time"
 
@@ -28,7 +29,7 @@ func (a *UserAdapter) FindUserByIdentifier(identifier string) (*auth.UserData, e
 	var user models.User
 	err := a.db.Where("username = ? OR email = ?", identifier, identifier).First(&user).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, auth.ErrInvalidCredentials
 		}
 		logger.Error("Erro ao buscar usuário por identificador", "error", err, "identifier", identifier)
@@ -47,7 +48,7 @@ func (a *UserAdapter) FindUserByID(id string) (*auth.UserData, error) {
 
 	var user models.User
 	if err := a.db.First(&user, userID).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, auth.ErrInvalidCredentials
 		}
 		logger.Error("Erro ao buscar usuário por ID", "error", err, "user_id", id)
@@ -106,7 +107,7 @@ func (a *UserAdapter) CreateUser(data auth.CreateUserInput) (*auth.UserData, err
 }
 
 // UpdatePassword updates the user's password
-func (a *UserAdapter) UpdatePassword(userID string, newPassword string) error {
+func (a *UserAdapter) UpdatePassword(userID, newPassword string) error {
 	id, err := strconv.ParseUint(userID, 10, 64)
 	if err != nil {
 		return err

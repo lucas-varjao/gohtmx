@@ -2,6 +2,7 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -38,22 +39,21 @@ func AuthMiddleware(authManager *auth.AuthManager) gin.HandlerFunc {
 		session, user, err := authManager.ValidateSession(sessionID)
 		if err != nil {
 			status := http.StatusUnauthorized
-			message := "sessão inválida"
-
+			var message string
 			switch {
-			case err == auth.ErrSessionExpired:
+			case errors.Is(err, auth.ErrSessionExpired):
 				message = "sessão expirada"
 				logger.Debug("Sessão expirada", "session_id", sessionID, "ip", c.ClientIP())
-			case err == auth.ErrSessionNotFound:
+			case errors.Is(err, auth.ErrSessionNotFound):
 				message = "sessão não encontrada"
 				logger.Warn("Sessão não encontrada", "session_id", sessionID, "ip", c.ClientIP())
-			case err == auth.ErrUserNotActive:
+			case errors.Is(err, auth.ErrUserNotActive):
 				message = "usuário inativo"
 				logger.Warn("Tentativa de acesso com usuário inativo", "session_id", sessionID, "ip", c.ClientIP())
 			default:
+				message = "sessão inválida"
 				logger.Error("Erro ao validar sessão", "error", err, "session_id", sessionID, "ip", c.ClientIP())
 			}
-
 			c.AbortWithStatusJSON(status, gin.H{"error": message})
 			return
 		}
@@ -129,7 +129,8 @@ func extractSessionID(c *gin.Context) string {
 }
 
 // setSessionCookie sets the session cookie in the response
-func setSessionCookie(c *gin.Context, sessionID string, expiresAt interface{}) {
+func setSessionCookie(c *gin.Context, sessionID string, expiresAt any) {
+	_ = expiresAt // unused but required by caller signature
 	// Calculate max age in seconds
 	maxAge := 30 * 24 * 60 * 60 // 30 days default
 

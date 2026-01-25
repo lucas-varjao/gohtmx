@@ -30,6 +30,14 @@ var (
 	ErrDisplayNameTooLong   = errors.New("nome de exibição não pode ter mais de 100 caracteres")
 )
 
+// Validation limits (avoid magic numbers for mnd)
+const (
+	minUsernameLen = 3
+	maxUsernameLen = 50
+	minPasswordLen = 8
+	maxDisplayLen  = 100
+)
+
 // List of common passwords to deny
 var commonPasswords = map[string]bool{
 	"password":    true,
@@ -50,11 +58,10 @@ func ValidateUsername(username string) error {
 		return ErrUsernameInvalid
 	}
 
-	if len(username) < 3 {
+	if len(username) < minUsernameLen {
 		return ErrUsernameTooShort
 	}
-
-	if len(username) > 50 {
+	if len(username) > maxUsernameLen {
 		return ErrUsernameTooLong
 	}
 
@@ -84,25 +91,31 @@ func ValidateEmail(email string) error {
 }
 
 // ValidatePassword ensures the password meets complexity requirements
-func ValidatePassword(password string, username string) error {
-	if len(password) < 8 {
+func ValidatePassword(password, username string) error {
+	if len(password) < minPasswordLen {
 		return ErrPasswordTooShort
 	}
+	if err := validatePasswordChars(password); err != nil {
+		return err
+	}
+	if isCommonPassword(password) {
+		return ErrPasswordCommonWord
+	}
+	if username != "" && len(username) >= minUsernameLen &&
+		strings.Contains(strings.ToLower(password), strings.ToLower(username)) {
+		return ErrPasswordContainsUser
+	}
+	return nil
+}
 
+func validatePasswordChars(password string) error {
 	var hasUpper, hasLower, hasNumber, hasSpecial bool
 	for _, char := range password {
-		switch {
-		case unicode.IsUpper(char):
-			hasUpper = true
-		case unicode.IsLower(char):
-			hasLower = true
-		case unicode.IsNumber(char):
-			hasNumber = true
-		case unicode.IsPunct(char) || unicode.IsSymbol(char):
-			hasSpecial = true
-		}
+		hasUpper = hasUpper || unicode.IsUpper(char)
+		hasLower = hasLower || unicode.IsLower(char)
+		hasNumber = hasNumber || unicode.IsNumber(char)
+		hasSpecial = hasSpecial || (unicode.IsPunct(char) || unicode.IsSymbol(char))
 	}
-
 	if !hasUpper {
 		return ErrPasswordNoUppercase
 	}
@@ -115,22 +128,17 @@ func ValidatePassword(password string, username string) error {
 	if !hasSpecial {
 		return ErrPasswordNoSpecial
 	}
+	return nil
+}
 
-	// Check if password is a common password - compare lowercase to match case-insensitively
-	passwordLower := strings.ToLower(password)
+func isCommonPassword(password string) bool {
+	lower := strings.ToLower(password)
 	for commonPass := range commonPasswords {
-		if commonPass == passwordLower || strings.HasPrefix(passwordLower, commonPass) ||
-			strings.Contains(passwordLower, commonPass) {
-			return ErrPasswordCommonWord
+		if commonPass == lower || strings.HasPrefix(lower, commonPass) || strings.Contains(lower, commonPass) {
+			return true
 		}
 	}
-
-	// Only check if username is contained in password if username is provided
-	if username != "" && len(username) >= 3 && strings.Contains(strings.ToLower(password), strings.ToLower(username)) {
-		return ErrPasswordContainsUser
-	}
-
-	return nil
+	return false
 }
 
 // ValidateDisplayName validates the display name
@@ -139,7 +147,7 @@ func ValidateDisplayName(name string) error {
 		return ErrDisplayNameInvalid
 	}
 
-	if len(name) > 100 {
+	if len(name) > maxDisplayLen {
 		return ErrDisplayNameTooLong
 	}
 

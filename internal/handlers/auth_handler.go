@@ -4,6 +4,7 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/a-h/templ"
@@ -47,22 +48,22 @@ func NewAuthHandler(authService service.AuthServiceInterface) *AuthHandler {
 
 // LoginRequest represents the login request body (supports both JSON and form data)
 type LoginRequest struct {
-	Username string `json:"username" form:"username" binding:"required"`
-	Password string `json:"password" form:"password" binding:"required"`
+	Username string `json:"username" binding:"required" form:"username"`
+	Password string `json:"password" binding:"required" form:"password"`
 }
 
 // RegistrationRequest represents the registration request body (supports both JSON and form data)
 type RegistrationRequest struct {
-	Username    string `json:"username" form:"username" binding:"required"`
-	Email       string `json:"email" form:"email" binding:"required"`
-	Password    string `json:"password" form:"password" binding:"required"`
-	DisplayName string `json:"display_name" form:"display_name" binding:"required"`
+	Username    string `json:"username"     binding:"required" form:"username"`
+	Email       string `json:"email"        binding:"required" form:"email"`
+	Password    string `json:"password"     binding:"required" form:"password"`
+	DisplayName string `json:"display_name" binding:"required" form:"display_name"`
 }
 
 // PasswordResetRequest represents the password reset request body
 type PasswordResetRequest struct {
-	Token           string `json:"token" binding:"required"`
-	NewPassword     string `json:"new_password" binding:"required"`
+	Token           string `json:"token"            binding:"required"`
+	NewPassword     string `json:"new_password"     binding:"required"`
 	ConfirmPassword string `json:"confirm_password" binding:"required"`
 }
 
@@ -102,11 +103,9 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	if err != nil {
 		status := http.StatusUnauthorized
 		message := "credenciais inválidas"
-
-		switch {
-		case err == service.ErrUserNotActive:
+		if errors.Is(err, service.ErrUserNotActive) {
 			message = "usuário inativo"
-		case err.Error() == "conta temporariamente bloqueada, tente novamente mais tarde":
+		} else if err.Error() == "conta temporariamente bloqueada, tente novamente mais tarde" {
 			message = err.Error()
 		}
 
@@ -121,11 +120,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// Set session cookie
+	// Set session cookie (30 days in seconds)
+	const cookieMaxAgeSec = 30 * 24 * 60 * 60
 	c.SetCookie(
 		middleware.SessionCookieName,
 		response.SessionID,
-		30*24*60*60, // 30 days
+		cookieMaxAgeSec,
 		"/",
 		"",
 		true, // secure
@@ -285,20 +285,19 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 
 	if err := h.authService.ResetPassword(req.Token, req.NewPassword); err != nil {
 		status := http.StatusBadRequest
-		message := "falha ao redefinir senha"
 		ip := getClientIP(c)
-
+		var message string
 		switch {
-		case err == service.ErrInvalidToken:
+		case errors.Is(err, service.ErrInvalidToken):
 			message = "token inválido"
 			logger.Warn("Tentativa de reset de senha com token inválido", "ip", ip)
-		case err == service.ErrExpiredToken:
+		case errors.Is(err, service.ErrExpiredToken):
 			message = "token expirado"
 			logger.Warn("Tentativa de reset de senha com token expirado", "ip", ip)
 		default:
+			message = "falha ao redefinir senha"
 			logger.Error("Erro ao resetar senha", "error", err, "ip", ip)
 		}
-
 		c.JSON(status, gin.H{"error": message})
 		return
 	}

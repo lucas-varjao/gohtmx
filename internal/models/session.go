@@ -6,12 +6,12 @@ import (
 
 // Session represents an authentication session stored in the database
 type Session struct {
-	ID        string    `gorm:"primaryKey;type:varchar(64)" json:"id"`
-	UserID    uint      `gorm:"index;not null" json:"user_id"`
-	ExpiresAt time.Time `gorm:"not null;index" json:"expires_at"`
+	ID        string    `json:"id"                   gorm:"primaryKey;type:varchar(64)"`
+	UserID    uint      `json:"user_id"              gorm:"index;not null"`
+	ExpiresAt time.Time `json:"expires_at"           gorm:"not null;index"`
 	CreatedAt time.Time `json:"created_at"`
-	UserAgent string    `gorm:"type:varchar(500)" json:"user_agent,omitempty"`
-	IP        string    `gorm:"type:varchar(45)" json:"ip,omitempty"` // Supports IPv6
+	UserAgent string    `json:"user_agent,omitempty" gorm:"type:varchar(500)"`
+	IP        string    `json:"ip,omitempty"         gorm:"type:varchar(45)"` // Supports IPv6
 }
 
 // TableName specifies the table name for GORM

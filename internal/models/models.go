@@ -11,24 +11,24 @@ import (
 type User struct {
 	gorm.Model
 	// Identity information
-	Username     string `gorm:"unique;not null;index" json:"username"`
-	Email        string `gorm:"unique;not null;index" json:"email"`
-	DisplayName  string `gorm:"not null" json:"display_name"`
-	PasswordHash string `gorm:"not null" json:"-"`
+	Username     string `json:"username"     gorm:"unique;not null;index"`
+	Email        string `json:"email"        gorm:"unique;not null;index"`
+	DisplayName  string `json:"display_name" gorm:"not null"`
+	PasswordHash string `json:"-"            gorm:"not null"`
 
 	// Profile information
 	FirstName string `json:"first_name,omitempty"`
 	LastName  string `json:"last_name,omitempty"`
 
 	// Account status
-	Active        bool      `gorm:"default:true" json:"active"`
-	EmailVerified bool      `gorm:"default:false" json:"email_verified"`
+	Active        bool      `json:"active"                gorm:"default:true"`
+	EmailVerified bool      `json:"email_verified"        gorm:"default:false"`
 	LastLogin     time.Time `json:"last_login,omitempty"`
 	LastActive    time.Time `json:"last_active,omitempty"`
 
 	// Access control
-	Role        string `gorm:"default:user" json:"role"`
-	Permissions string `gorm:"type:text" json:"permissions,omitempty"` // JSON string of permissions
+	Role        string `json:"role"                  gorm:"default:user"`
+	Permissions string `json:"permissions,omitempty" gorm:"type:text"` // JSON string of permissions
 
 	// Password reset (kept separate from session management)
 	ResetToken       string    `json:"-"`

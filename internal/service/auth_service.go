@@ -137,7 +137,7 @@ func (s *AuthService) LogoutAll(userID string) error {
 }
 
 // Register creates a new user account
-func (s *AuthService) Register(username, email, password, displayName string) (*models.User, error) {
+func (s *AuthService) Register(username, emailAddr, password, displayName string) (*models.User, error) {
 	// Check if username already exists
 	if _, err := s.userAdapter.FindUserByIdentifier(username); err == nil {
 		logger.Warn("Tentativa de registro com username já existente", "username", username)
@@ -145,20 +145,20 @@ func (s *AuthService) Register(username, email, password, displayName string) (*
 	}
 
 	// Check if email already exists
-	if _, err := s.userAdapter.FindByEmail(email); err == nil {
-		logger.Warn("Tentativa de registro com email já existente", "email", email)
+	if _, err := s.userAdapter.FindByEmail(emailAddr); err == nil {
+		logger.Warn("Tentativa de registro com email já existente", "email", emailAddr)
 		return nil, errors.New("email already exists")
 	}
 
 	// Create user via adapter
 	userData, err := s.userAdapter.CreateUser(auth.CreateUserInput{
 		Identifier:  username,
-		Email:       email,
+		Email:       emailAddr,
 		Password:    password,
 		DisplayName: displayName,
 	})
 	if err != nil {
-		logger.Error("Erro ao criar usuário", "error", err, "username", username, "email", email)
+		logger.Error("Erro ao criar usuário", "error", err, "username", username, "email", emailAddr)
 		return nil, err
 	}
 
@@ -169,7 +169,7 @@ func (s *AuthService) Register(username, email, password, displayName string) (*
 		return nil, err
 	}
 
-	logger.Info("Usuário registrado com sucesso", "user_id", user.ID, "username", username, "email", email)
+	logger.Info("Usuário registrado com sucesso", "user_id", user.ID, "username", username, "email", emailAddr)
 	return user, nil
 }
 
@@ -177,13 +177,14 @@ func (s *AuthService) Register(username, email, password, displayName string) (*
 func (s *AuthService) RequestPasswordReset(emailAddr string) error {
 	user, err := s.userAdapter.FindByEmail(emailAddr)
 	if err != nil {
-		// Don't reveal if email exists
+		// Don't reveal if email exists (return nil on purpose)
 		logger.Debug("Solicitação de reset de senha para email não encontrado", "email", emailAddr)
-		return nil
+		return nil //nolint:nilerr // do not reveal whether email exists
 	}
 
-	// Generate reset token
-	tokenBytes := make([]byte, 32)
+	// Generate reset token (32 bytes for 256-bit token)
+	const tokenByteSize = 32
+	tokenBytes := make([]byte, tokenByteSize)
 	_, err = s.generateSecureToken(tokenBytes)
 	if err != nil {
 		return err

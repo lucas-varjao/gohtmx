@@ -38,7 +38,8 @@ func (t TemplRender) WriteContentType(w http.ResponseWriter) {
 }
 
 // Instance implements the render.Render interface.
-func (t *TemplRender) Instance(name string, data interface{}) render.Render {
+func (t *TemplRender) Instance(name string, data any) render.Render {
+	_ = name // required by render.Render interface
 	if templData, ok := data.(templ.Component); ok {
 		return &TemplRender{
 			Code: http.StatusOK,

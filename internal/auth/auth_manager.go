@@ -164,9 +164,12 @@ func (m *AuthManager) GetSessionAdapter() SessionAdapter {
 	return m.sessionAdapter
 }
 
+// SessionIDByteSize is the number of random bytes for session ID (256-bit).
+const SessionIDByteSize = 32
+
 // GenerateSessionID generates a cryptographically secure session ID
 func GenerateSessionID() (string, error) {
-	bytes := make([]byte, 32)
+	bytes := make([]byte, SessionIDByteSize)
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
 	}

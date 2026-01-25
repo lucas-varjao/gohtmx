@@ -12,10 +12,11 @@ package email
 import (
 	"bytes"
 	"fmt"
-	"github.com/lucas-varjao/gohtmx/internal/config"
-	"github.com/lucas-varjao/gohtmx/internal/logger"
 	"html/template"
 	"net/smtp"
+
+	"github.com/lucas-varjao/gohtmx/internal/config"
+	"github.com/lucas-varjao/gohtmx/internal/logger"
 )
 
 // EmailServiceInterface defines the interface for email services

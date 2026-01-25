@@ -37,47 +37,38 @@ func SetupRouter(
 	})
 
 	// Rate limiter for auth routes (brute force prevention)
-	authLimiter := middleware.NewIPRateLimiter(rate.Limit(1), 3, time.Hour)
+	const authBurst = 3
+	authLimiter := middleware.NewIPRateLimiter(rate.Limit(1), authBurst, time.Hour)
 
 	// Public auth routes
 	authRoutes := r.Group("/auth")
 	authRoutes.Use(middleware.RateLimitMiddleware(authLimiter))
-	{
-		authRoutes.POST("/login", authHandler.Login)
-		authRoutes.POST("/register", authHandler.Register)
-		authRoutes.POST("/password-reset-request", authHandler.RequestPasswordReset)
-		authRoutes.POST("/password-reset", authHandler.ResetPassword)
-	}
+	authRoutes.POST("/login", authHandler.Login)
+	authRoutes.POST("/register", authHandler.Register)
+	authRoutes.POST("/password-reset-request", authHandler.RequestPasswordReset)
+	authRoutes.POST("/password-reset", authHandler.ResetPassword)
 
 	// Rate limiter for API (more permissive)
-	apiLimiter := middleware.NewIPRateLimiter(rate.Limit(10), 20, time.Hour)
+	const apiBurst = 20
+	const apiRatePerSec = 10
+	apiLimiter := middleware.NewIPRateLimiter(rate.Limit(apiRatePerSec), apiBurst, time.Hour)
 
 	// Protected routes
 	api := r.Group("/api")
 	api.Use(middleware.RateLimitMiddleware(apiLimiter))
 	api.Use(middleware.AuthMiddleware(authManager))
-	{
-		// Test protected route
-		api.GET("/protected", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "Esta é uma rota protegida",
-			})
-		})
+	api.GET("/protected", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "Esta é uma rota protegida"})
+	})
+	api.GET("/me", authHandler.GetCurrentUser)
+	api.POST("/logout", authHandler.Logout)
 
-		api.GET("/me", authHandler.GetCurrentUser)
-		api.POST("/logout", authHandler.Logout)
-
-		// Admin only routes
-		admin := api.Group("/admin")
-		admin.Use(middleware.RoleMiddleware("admin"))
-		{
-			admin.GET("/dashboard", func(c *gin.Context) {
-				c.JSON(http.StatusOK, gin.H{
-					"message": "Admin Dashboard",
-				})
-			})
-		}
-	}
+	// Admin only routes
+	admin := api.Group("/admin")
+	admin.Use(middleware.RoleMiddleware("admin"))
+	admin.GET("/dashboard", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "Admin Dashboard"})
+	})
 
 	return r
 }
