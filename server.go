@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/a-h/templ"
+	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	"github.com/lucas-varjao/gohtmx/internal/auth"
 	"github.com/lucas-varjao/gohtmx/internal/config"
@@ -63,8 +64,11 @@ func runServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager)
 	// Handle static files (keep gowebly static route)
 	r.Static("/static", "./static")
 
-	// Handle index page view (keep gowebly example route)
-	r.GET("/", indexViewHandler)
+	// Handle index page view (receives authManager to show user when logged in)
+	r.GET("/", func(c *gin.Context) { indexViewHandler(c, authManager) })
+
+	// Logout from page (invalidates session, clears cookie, redirects to /)
+	r.POST("/logout", func(c *gin.Context) { logoutViewHandler(c, authManager) })
 
 	// Handle authentication views
 	r.GET("/login", loginViewHandler)

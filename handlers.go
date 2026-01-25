@@ -7,6 +7,7 @@ import (
 
 	"github.com/angelofallars/htmx-go"
 
+	"github.com/lucas-varjao/gohtmx/internal/auth"
 	"github.com/lucas-varjao/gohtmx/internal/middleware"
 	"github.com/lucas-varjao/gohtmx/templates"
 	"github.com/lucas-varjao/gohtmx/templates/pages"
@@ -14,16 +15,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// indexViewHandler handles a view for the index page (stack demo + links to Login/Register).
-func indexViewHandler(c *gin.Context) {
+// indexViewHandler handles the index page; shows user name + logout when logged in.
+func indexViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 	generatedAt := time.Now().Format("02/01/2006 15:04:05")
+	displayName := ""
+
+	if sessionID := middleware.ExtractSessionID(c); sessionID != "" {
+		if _, user, err := authManager.ValidateSession(sessionID); err == nil && user != nil {
+			if user.DisplayName != "" {
+				displayName = user.DisplayName
+			} else {
+				displayName = user.Identifier
+			}
+		}
+	}
 
 	metaTags := pages.MetaTags(
 		"GoHTMX, Go, TEMPL, HTMX, Alpine.js, Tailwind, DaisyUI, demo, stack",
 		"Página de demonstração da stack: Go, TEMPL, HTMX, Alpine.js, Tailwind e DaisyUI.",
 	)
 
-	bodyContent := pages.IndexPage(generatedAt)
+	bodyContent := pages.IndexPage(generatedAt, displayName)
 
 	indexTemplate := templates.Layout(
 		"GoHTMX — Stack demo",
@@ -35,6 +47,16 @@ func indexViewHandler(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
+}
+
+// logoutViewHandler invalidates the session and redirects to index.
+func logoutViewHandler(c *gin.Context, authManager *auth.AuthManager) {
+	sessionID := middleware.ExtractSessionID(c)
+	if sessionID != "" {
+		_ = authManager.Logout(sessionID)
+		middleware.ClearSessionCookie(c)
+	}
+	c.Redirect(http.StatusFound, "/")
 }
 
 // showContentAPIHandler handles an API endpoint to show content.
