@@ -30,7 +30,7 @@ func LoginPage(errorMessage string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"card bg-base-100 shadow-xl text-base-content\"><div class=\"card-body\"><h1 class=\"card-title text-3xl mb-4 text-base-content\">Entrar</h1>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"card bg-base-100 shadow-xl text-base-content\"><div class=\"card-body\"><h1 class=\"card-title text-3xl mb-4 text-base-content justify-center\">Entrar</h1>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -53,7 +53,7 @@ func LoginPage(errorMessage string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form hx-post=\"/auth/login\" hx-target=\"#login-error\" hx-swap=\"innerHTML\" hx-on::after-request=\"if(event.detail.xhr.status === 200) { window.location.href = '/'; }\" class=\"space-y-4\"><div id=\"login-error\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Usuário ou Email</span></label> <input type=\"text\" name=\"username\" placeholder=\"usuário ou email\" class=\"input input-bordered w-full\" required></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Senha</span></label> <input type=\"password\" name=\"password\" placeholder=\"senha\" class=\"input input-bordered w-full\" required></div><div class=\"form-control mt-6\"><button type=\"submit\" class=\"btn btn-primary w-full\">Entrar</button></div></form><div class=\"divider\">ou</div><div class=\"text-center\"><p class=\"text-sm text-base-content/70\">Não tem uma conta?  <a href=\"/register\" class=\"link link-primary\">Registre-se</a></p></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form hx-post=\"/auth/login\" hx-target=\"#login-error\" hx-swap=\"innerHTML\" hx-on::after-request=\"if(event.detail.xhr.status === 200) { window.location.href = '/'; }\" class=\"space-y-4\"><div id=\"login-error\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Usuário ou Email</span></label> <input type=\"text\" name=\"username\" placeholder=\"usuário ou email\" class=\"input input-bordered w-full\" required></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Senha</span></label> <input type=\"password\" name=\"password\" placeholder=\"senha\" class=\"input input-bordered w-full\" required></div><div class=\"form-control mt-6\"><button type=\"submit\" class=\"btn btn-primary w-full\">Entrar</button></div></form><div class=\"divider\">ou</div><div class=\"text-center\"><p class=\"text-sm text-base-content/70\">Não tem uma conta?  <a href=\"/register\" class=\"link link-primary transition-colors duration-200\">Registre-se</a></p></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -2,9 +2,11 @@ package templates
 
 import "github.com/lucas-varjao/gohtmx/templates/pages"
 
-templ Layout(title string, metaTags, bodyContent templ.Component) {
+// Layout is the single app shell: head, Navbar, body content slot, Footer.
+// All pages (index, login, register) use this layout.
+templ Layout(title string, metaTags, bodyContent templ.Component, navDisplayName string, navLoggedIn bool, footerVersion string, footerYear int) {
 	<!DOCTYPE html>
-	<html lang="en" data-theme="smartnavy">
+	<html lang="pt-BR" data-theme="smartnavy">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -21,8 +23,12 @@ templ Layout(title string, metaTags, bodyContent templ.Component) {
 			<link rel="icon" href="/static/favicon.png" sizes="any"/>
 			<link href="/static/styles.css" rel="stylesheet"/>
 		</head>
-		<body onload={ pages.BodyScripts() }>
-			@bodyContent
+		<body class="min-h-screen flex flex-col bg-base-200" onload={ pages.BodyScripts() }>
+			@pages.Navbar(navDisplayName, navLoggedIn)
+			<main class="flex-1 flex flex-col">
+				@bodyContent
+			</main>
+			@pages.Footer(footerVersion, footerYear, "GoHTMX")
 			<script src="/static/scripts.js"></script>
 		</body>
 	</html>

@@ -15,32 +15,48 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AppVersion is shown in the footer. Set via ldflags on release or use "dev".
+var AppVersion = "dev"
+
+// getNavData returns displayName and loggedIn for the navbar from the current request.
+func getNavData(c *gin.Context, authManager *auth.AuthManager) (displayName string, loggedIn bool) {
+	sessionID := middleware.ExtractSessionID(c)
+	if sessionID == "" {
+		return "", false
+	}
+	_, user, err := authManager.ValidateSession(sessionID)
+	if err != nil || user == nil {
+		return "", false
+	}
+	loggedIn = true
+	if user.DisplayName != "" {
+		displayName = user.DisplayName
+	} else {
+		displayName = user.Identifier
+	}
+	return displayName, loggedIn
+}
+
 // indexViewHandler handles the index page; shows user name + logout when logged in.
 func indexViewHandler(c *gin.Context, authManager *auth.AuthManager) {
+	displayName, loggedIn := getNavData(c, authManager)
 	generatedAt := time.Now().Format("02/01/2006 15:04:05")
-	displayName := ""
-
-	if sessionID := middleware.ExtractSessionID(c); sessionID != "" {
-		if _, user, err := authManager.ValidateSession(sessionID); err == nil && user != nil {
-			if user.DisplayName != "" {
-				displayName = user.DisplayName
-			} else {
-				displayName = user.Identifier
-			}
-		}
-	}
 
 	metaTags := pages.MetaTags(
 		"GoHTMX, Go, TEMPL, HTMX, Alpine.js, Tailwind, DaisyUI, demo, stack",
 		"Página de demonstração da stack: Go, TEMPL, HTMX, Alpine.js, Tailwind e DaisyUI.",
 	)
 
-	bodyContent := pages.IndexPage(generatedAt, displayName)
+	bodyContent := pages.IndexPage(generatedAt)
 
 	indexTemplate := templates.Layout(
 		"GoHTMX — Stack demo",
 		metaTags,
 		bodyContent,
+		displayName,
+		loggedIn,
+		AppVersion,
+		time.Now().Year(),
 	)
 
 	if err := htmx.NewResponse().RenderTempl(c.Request.Context(), c.Writer, indexTemplate); err != nil {
@@ -77,36 +93,31 @@ func showContentAPIHandler(c *gin.Context) {
 }
 
 // loginViewHandler handles a view for the login page.
-func loginViewHandler(c *gin.Context) {
-	// Check if user is already authenticated, redirect to home
+func loginViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 	if sessionID := middleware.ExtractSessionID(c); sessionID != "" {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
-	// Get error message from query parameter if any
 	errorMsg := c.Query("error")
 	if errorMsg == "" {
 		errorMsg = c.GetString("error")
 	}
 
-	// Define template meta tags.
-	metaTags := pages.MetaTags(
-		"login, autenticação, entrar",
-		"Faça login na sua conta",
-	)
+	displayName, loggedIn := getNavData(c, authManager)
+	metaTags := pages.MetaTags("login, autenticação, entrar", "Faça login na sua conta")
+	bodyContent := pages.AuthContentWrap(pages.LoginPage(errorMsg))
 
-	// Define template body content.
-	bodyContent := pages.LoginPage(errorMsg)
-
-	// Define template layout for login page.
-	loginTemplate := pages.AuthLayout(
+	loginTemplate := templates.Layout(
 		"Entrar - GoHTMX",
 		metaTags,
 		bodyContent,
+		displayName,
+		loggedIn,
+		AppVersion,
+		time.Now().Year(),
 	)
 
-	// Render login page template.
 	if err := htmx.NewResponse().RenderTempl(c.Request.Context(), c.Writer, loginTemplate); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -114,36 +125,31 @@ func loginViewHandler(c *gin.Context) {
 }
 
 // registerViewHandler handles a view for the registration page.
-func registerViewHandler(c *gin.Context) {
-	// Check if user is already authenticated, redirect to home
+func registerViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 	if sessionID := middleware.ExtractSessionID(c); sessionID != "" {
 		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
-	// Get error message from query parameter if any
 	errorMsg := c.Query("error")
 	if errorMsg == "" {
 		errorMsg = c.GetString("error")
 	}
 
-	// Define template meta tags.
-	metaTags := pages.MetaTags(
-		"registro, criar conta, cadastro",
-		"Crie uma nova conta",
-	)
+	displayName, loggedIn := getNavData(c, authManager)
+	metaTags := pages.MetaTags("registro, criar conta, cadastro", "Crie uma nova conta")
+	bodyContent := pages.AuthContentWrap(pages.RegisterPage(errorMsg))
 
-	// Define template body content.
-	bodyContent := pages.RegisterPage(errorMsg)
-
-	// Define template layout for register page.
-	registerTemplate := pages.AuthLayout(
+	registerTemplate := templates.Layout(
 		"Criar Conta - GoHTMX",
 		metaTags,
 		bodyContent,
+		displayName,
+		loggedIn,
+		AppVersion,
+		time.Now().Year(),
 	)
 
-	// Render register page template.
 	if err := htmx.NewResponse().RenderTempl(c.Request.Context(), c.Writer, registerTemplate); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return

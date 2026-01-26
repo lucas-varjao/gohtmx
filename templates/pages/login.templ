@@ -4,7 +4,7 @@ package pages
 templ LoginPage(errorMessage string) {
 	<div class="card bg-base-100 shadow-xl text-base-content">
 		<div class="card-body">
-			<h1 class="card-title text-3xl mb-4 text-base-content">Entrar</h1>
+			<h1 class="card-title text-3xl mb-4 text-base-content justify-center">Entrar</h1>
 			if errorMessage != "" {
 				<div class="alert alert-error mb-4">
 					<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
@@ -55,7 +55,7 @@ templ LoginPage(errorMessage string) {
 			<div class="text-center">
 				<p class="text-sm text-base-content/70">
 					Não tem uma conta? 
-					<a href="/register" class="link link-primary">Registre-se</a>
+					<a href="/register" class="link link-primary transition-colors duration-200">Registre-se</a>
 				</p>
 			</div>
 		</div>

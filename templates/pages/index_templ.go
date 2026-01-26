@@ -127,8 +127,8 @@ func BodyContent(h1, text string) templ.Component {
 	})
 }
 
-// IndexPage renders the main index: stack demo; se logado, mostra nome e botão Sair.
-func IndexPage(generatedAt string, displayName string) templ.Component {
+// IndexPage renders the main index content (navbar/footer come from Layout).
+func IndexPage(generatedAt string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -149,48 +149,20 @@ func IndexPage(generatedAt string, displayName string) templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div id=\"app\" class=\"min-h-screen bg-base-200\"><header class=\"bg-base-100 shadow-sm\"><div class=\"max-w-4xl mx-auto px-4 py-4 flex items-center justify-between\"><h1 class=\"text-xl font-semibold text-base-content\">GoHTMX</h1><nav class=\"flex items-center gap-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"max-w-4xl mx-auto px-4 py-8 space-y-8\"><div class=\"alert bg-success/10 border-success/20 text-success-content\"><span>Stack ativa: Go, TEMPL, HTMX, Alpine.js, Tailwind, DaisyUI.</span></div><section><h2 class=\"text-2xl font-semibold mb-4 text-base-content\">Demonstração da stack</h2><div class=\"grid gap-4 md:grid-cols-2\"><div class=\"card bg-base-100 shadow-xl\"><div class=\"card-body\"><h3 class=\"card-title text-lg\">TEMPL <span class=\"badge badge-ghost\">servidor</span></h3><p class=\"text-base-content/80\">Página gerada em <strong>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if displayName != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span class=\"text-sm text-base-content/80\">Olá, <strong class=\"text-base-content\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(displayName)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/index.templ`, Line: 56, Col: 102}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</strong></span><form method=\"post\" action=\"/logout\" class=\"inline\"><button type=\"submit\" class=\"btn btn-ghost btn-sm\">Sair</button></form>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<a href=\"/login\" class=\"btn btn-ghost btn-sm\">Entrar</a> <a href=\"/register\" class=\"btn btn-primary btn-sm\">Registrar</a>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(generatedAt)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/index.templ`, Line: 65, Col: 47}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</nav></div></header><main class=\"max-w-4xl mx-auto px-4 py-8 space-y-8\"><div class=\"alert bg-success/10 border-success/20 text-success-content\"><span>Stack ativa: Go, TEMPL, HTMX, Alpine.js, Tailwind, DaisyUI.</span></div><section><h2 class=\"text-2xl font-semibold mb-4 text-base-content\">Demonstração da stack</h2><div class=\"grid gap-4 md:grid-cols-2\"><div class=\"card bg-base-100 shadow-xl\"><div class=\"card-body\"><h3 class=\"card-title text-lg\">TEMPL <span class=\"badge badge-ghost\">servidor</span></h3><p class=\"text-base-content/80\">Página gerada em <strong>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(generatedAt)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/index.templ`, Line: 83, Col: 47}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</strong>.</p></div></div><div class=\"card bg-base-100 shadow-xl\"><div class=\"card-body\"><h3 class=\"card-title text-lg\">HTMX <span class=\"badge badge-ghost\">partial</span></h3><button type=\"button\" class=\"btn btn-primary btn-sm\" hx-get=\"/api/hello-world\" hx-target=\"#htmx-result\" hx-swap=\"innerHTML\">Testar HTMX</button><div id=\"htmx-result\" class=\"min-h-6 mt-2 text-sm text-base-content/80\"></div></div></div><div class=\"card bg-base-100 shadow-xl\" x-data=\"{ count: 0 }\"><div class=\"card-body\"><h3 class=\"card-title text-lg\">Alpine.js <span class=\"badge badge-ghost\">cliente</span></h3><p class=\"text-base-content/80\">Contador: <span x-text=\"count\">0</span></p><button type=\"button\" class=\"btn btn-secondary btn-sm\" @click=\"count++\">Incrementar</button></div></div><div class=\"card bg-base-100 shadow-xl\"><div class=\"card-body\"><h3 class=\"card-title text-lg\">Backend (Go + Gin) <span class=\"badge badge-ghost\">/health</span></h3><button type=\"button\" class=\"btn btn-accent btn-sm\" hx-get=\"/health\" hx-target=\"#health-result\" hx-swap=\"innerHTML\">Verificar backend</button><div id=\"health-result\" class=\"min-h-6 mt-2 text-sm font-mono text-base-content/80\"></div></div></div></div></section></main></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</strong>.</p></div></div><div class=\"card bg-base-100 shadow-xl\"><div class=\"card-body\"><h3 class=\"card-title text-lg\">HTMX <span class=\"badge badge-ghost\">partial</span></h3><button type=\"button\" class=\"btn btn-primary btn-sm\" hx-get=\"/api/hello-world\" hx-target=\"#htmx-result\" hx-swap=\"innerHTML\">Testar HTMX</button><div id=\"htmx-result\" class=\"min-h-6 mt-2 text-sm text-base-content/80\"></div></div></div><div class=\"card bg-base-100 shadow-xl\" x-data=\"{ count: 0 }\"><div class=\"card-body\"><h3 class=\"card-title text-lg\">Alpine.js <span class=\"badge badge-ghost\">cliente</span></h3><p class=\"text-base-content/80\">Contador: <span x-text=\"count\">0</span></p><button type=\"button\" class=\"btn btn-secondary btn-sm\" @click=\"count++\">Incrementar</button></div></div><div class=\"card bg-base-100 shadow-xl\"><div class=\"card-body\"><h3 class=\"card-title text-lg\">Backend (Go + Gin) <span class=\"badge badge-ghost\">/health</span></h3><button type=\"button\" class=\"btn btn-accent btn-sm\" hx-get=\"/health\" hx-target=\"#health-result\" hx-swap=\"innerHTML\">Verificar backend</button><div id=\"health-result\" class=\"min-h-6 mt-2 text-sm font-mono text-base-content/80\"></div></div></div></div></section></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

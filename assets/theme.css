@@ -71,7 +71,13 @@
   font-display: swap;
 }
 
-/* ---- Default type (layouts may override on body) ---- */
+/* ---- Footer: softer text for version/trademark (token for consistency) ---- */
+:root {
+  --footer-text: color-mix(in srgb, var(--gray-50) 70%, transparent);
+}
+
+/* ---- Type scale & hierarchy (Noto Sans everywhere) ---- */
+/* Brand (navbar): text-xl + font-bold. Nav items: text-sm. Section titles: text-2xl font-semibold. Body: default. Footer: text-sm + --footer-text. */
 :root {
   font-family: 'Noto Sans', system-ui, sans-serif;
   line-height: 1.5;

@@ -71,9 +71,9 @@ func runServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager)
 	// Logout from page (invalidates session, clears cookie, redirects to /)
 	r.POST("/logout", func(c *gin.Context) { logoutViewHandler(c, authManager) })
 
-	// Handle authentication views
-	r.GET("/login", loginViewHandler)
-	r.GET("/register", registerViewHandler)
+	// Handle authentication views (pass authManager for navbar/footer).
+	r.GET("/login", func(c *gin.Context) { loginViewHandler(c, authManager) })
+	r.GET("/register", func(c *gin.Context) { registerViewHandler(c, authManager) })
 
 	// Handle API endpoints (keep gowebly example route)
 	r.GET("/api/hello-world", showContentAPIHandler)

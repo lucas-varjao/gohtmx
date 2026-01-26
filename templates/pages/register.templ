@@ -4,18 +4,16 @@ package pages
 templ RegisterPage(errorMessage string) {
 	<div class="card bg-base-100 shadow-xl text-base-content">
 		<div class="card-body">
-			<h1 class="card-title text-3xl mb-4 text-base-content">Criar Conta</h1>
-			
+			<h1 class="card-title text-3xl mb-4 text-base-content justify-center">Criar Conta</h1>
 			if errorMessage != "" {
 				<div class="alert alert-error mb-4">
 					<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
 					</svg>
 					<span>{ errorMessage }</span>
 				</div>
 			}
-			
-			<form 
+			<form
 				hx-post="/auth/register"
 				hx-target="#register-error"
 				hx-swap="innerHTML"
@@ -24,72 +22,67 @@ templ RegisterPage(errorMessage string) {
 				x-data="{ password: '', confirmPassword: '', passwordsMatch: true }"
 			>
 				<div id="register-error"></div>
-				
 				<div class="form-control">
 					<label class="label">
 						<span class="label-text">Nome de Usuário</span>
 					</label>
-					<input 
-						type="text" 
-						name="username" 
-						placeholder="nome de usuário" 
-						class="input input-bordered w-full" 
+					<input
+						type="text"
+						name="username"
+						placeholder="nome de usuário"
+						class="input input-bordered w-full"
 						required
 						minlength="3"
 					/>
 				</div>
-				
 				<div class="form-control">
 					<label class="label">
 						<span class="label-text">Email</span>
 					</label>
-					<input 
-						type="email" 
-						name="email" 
-						placeholder="email@exemplo.com" 
-						class="input input-bordered w-full" 
+					<input
+						type="email"
+						name="email"
+						placeholder="email@exemplo.com"
+						class="input input-bordered w-full"
 						required
 					/>
 				</div>
-				
 				<div class="form-control">
 					<label class="label">
 						<span class="label-text">Nome de Exibição</span>
 					</label>
-					<input 
-						type="text" 
-						name="display_name" 
-						placeholder="seu nome" 
-						class="input input-bordered w-full" 
+					<input
+						type="text"
+						name="display_name"
+						placeholder="seu nome"
+						class="input input-bordered w-full"
 						required
 					/>
 				</div>
-				
 				<div class="form-control">
 					<label class="label">
 						<span class="label-text">Senha</span>
 					</label>
-					<input 
-						type="password" 
-						name="password" 
-						placeholder="senha" 
-						class="input input-bordered w-full" 
+					<input
+						type="password"
+						name="password"
+						placeholder="senha"
+						class="input input-bordered w-full"
 						required
 						minlength="8"
 						x-model="password"
 						@input="passwordsMatch = confirmPassword === '' || password === confirmPassword"
 					/>
 				</div>
-				
 				<div class="form-control">
 					<label class="label">
 						<span class="label-text">Confirmar Senha</span>
 					</label>
-					<input 
-						type="password" 
-						name="confirm_password" 
-						placeholder="confirmar senha" 
-						class="input input-bordered w-full" 
+					<input
+						type="password"
+						name="confirm_password"
+						placeholder="confirmar senha"
+						class="input input-bordered w-full"
 						required
 						x-model="confirmPassword"
 						@input="passwordsMatch = password === confirmPassword"
@@ -98,10 +91,9 @@ templ RegisterPage(errorMessage string) {
 						<span class="label-text-alt text-error">As senhas não coincidem</span>
 					</label>
 				</div>
-				
 				<div class="form-control mt-6">
-					<button 
-						type="submit" 
+					<button
+						type="submit"
 						class="btn btn-primary w-full"
 						:disabled="!passwordsMatch"
 					>
@@ -109,13 +101,11 @@ templ RegisterPage(errorMessage string) {
 					</button>
 				</div>
 			</form>
-			
 			<div class="divider">ou</div>
-			
 			<div class="text-center">
 				<p class="text-sm text-base-content/70">
 					Já tem uma conta? 
-					<a href="/login" class="link link-primary">Entrar</a>
+					<a href="/login" class="link link-primary transition-colors duration-200">Entrar</a>
 				</p>
 			</div>
 		</div>

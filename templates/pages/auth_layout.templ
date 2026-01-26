@@ -1,6 +1,16 @@
 package pages
 
-// AuthLayout defines a minimal layout for authentication pages (login, register)
+// AuthContentWrap wraps login/register card in a centered container for use inside the app Layout.
+templ AuthContentWrap(content templ.Component) {
+	<div class="flex-1 flex items-center justify-center p-4">
+		<div class="w-full max-w-md">
+			@content
+		</div>
+	</div>
+}
+
+// AuthLayout defines a minimal layout for authentication pages (login, register).
+// Prefer using the app Layout + AuthContentWrap so navbar/footer are shown.
 templ AuthLayout(title string, metaTags, bodyContent templ.Component) {
 	<!DOCTYPE html>
 	<html lang="pt-BR" data-theme="smartnavy">

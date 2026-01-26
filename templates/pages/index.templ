@@ -45,34 +45,16 @@ templ BodyContent(h1, text string) {
 	</div>
 }
 
-// IndexPage renders the main index: stack demo; se logado, mostra nome e botão Sair.
-templ IndexPage(generatedAt string, displayName string) {
-	<div id="app" class="min-h-screen bg-base-200">
-		<header class="bg-base-100 shadow-sm">
-			<div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-				<h1 class="text-xl font-semibold text-base-content">GoHTMX</h1>
-				<nav class="flex items-center gap-3">
-					if displayName != "" {
-						<span class="text-sm text-base-content/80">Olá, <strong class="text-base-content">{ displayName }</strong></span>
-						<form method="post" action="/logout" class="inline">
-							<button type="submit" class="btn btn-ghost btn-sm">Sair</button>
-						</form>
-					} else {
-						<a href="/login" class="btn btn-ghost btn-sm">Entrar</a>
-						<a href="/register" class="btn btn-primary btn-sm">Registrar</a>
-					}
-				</nav>
-			</div>
-		</header>
+// IndexPage renders the main index content (navbar/footer come from Layout).
+templ IndexPage(generatedAt string) {
+	<div class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+		<div class="alert bg-success/10 border-success/20 text-success-content">
+			<span>Stack ativa: Go, TEMPL, HTMX, Alpine.js, Tailwind, DaisyUI.</span>
+		</div>
 
-		<main class="max-w-4xl mx-auto px-4 py-8 space-y-8">
-			<div class="alert bg-success/10 border-success/20 text-success-content">
-				<span>Stack ativa: Go, TEMPL, HTMX, Alpine.js, Tailwind, DaisyUI.</span>
-			</div>
-
-			<section>
-				<h2 class="text-2xl font-semibold mb-4 text-base-content">Demonstração da stack</h2>
-				<div class="grid gap-4 md:grid-cols-2">
+		<section>
+			<h2 class="text-2xl font-semibold mb-4 text-base-content">Demonstração da stack</h2>
+			<div class="grid gap-4 md:grid-cols-2">
 					<div class="card bg-base-100 shadow-xl">
 						<div class="card-body">
 							<h3 class="card-title text-lg">
@@ -139,7 +121,6 @@ templ IndexPage(generatedAt string, displayName string) {
 					</div>
 				</div>
 			</section>
-		</main>
 	</div>
 }
 
