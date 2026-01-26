@@ -11,9 +11,9 @@ import templruntime "github.com/a-h/templ/runtime"
 import "html/template"
 
 // AdminBody is the admin area content for use as bodyContent of Layout.
-// Renders a responsive drawer: sidebar as overlay on mobile (toggle via label), always visible on lg+.
+// Renders a responsive drawer: sidebar as overlay on mobile (toggle via Navbar), always visible on lg+.
 // sidebarActive highlights the nav item ("", "users"). content is the main admin page (e.g. UsersPage, UsersNewPage).
-func AdminBody(sidebarActive string, iconDashboard, iconUsers, iconLogOut template.HTML, content templ.Component) templ.Component {
+func AdminBody(sidebarActive string, iconDashboard, iconUsers, iconLogOut, iconHome template.HTML, content templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -34,7 +34,7 @@ func AdminBody(sidebarActive string, iconDashboard, iconUsers, iconLogOut templa
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Drawer uses CSS grid (sidebar col1, content col2). Do not add flex to the root or it overrides grid and content overlaps the sidebar. --><div class=\"drawer lg:drawer-open flex-1 min-h-0\"><input id=\"admin-drawer\" type=\"checkbox\" class=\"drawer-toggle\" aria-hidden=\"true\"><div class=\"drawer-content flex flex-col min-h-0 min-w-0\"><!-- Mobile: bar with menu toggle (hidden on lg when sidebar is visible). --><div class=\"flex items-center gap-2 p-4 border-b border-base-300 bg-base-100 lg:hidden shrink-0\"><label for=\"admin-drawer\" aria-label=\"Abrir menu\" class=\"btn btn-ghost btn-square drawer-button\"><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\" class=\"inline-block h-6 w-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M4 6h16M4 12h16M4 18h16\"></path></svg></label> <span class=\"font-semibold text-base-content\">Admin</span></div><!-- Main content area (scrollable). --><div class=\"flex-1 overflow-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Drawer uses CSS grid (sidebar col1, content col2). Do not add flex to the root or it overrides grid and content overlaps the sidebar. --><div class=\"drawer lg:drawer-open flex-1 min-h-0\"><input id=\"admin-drawer\" type=\"checkbox\" class=\"drawer-toggle\" aria-hidden=\"true\"><div class=\"drawer-content flex flex-col min-h-0 min-w-0\"><!-- Main content area (scrollable). Mobile header removed - now handled by unified Navbar. --><div class=\"flex-1 overflow-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -42,12 +42,12 @@ func AdminBody(sidebarActive string, iconDashboard, iconUsers, iconLogOut templa
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div><div class=\"drawer-side shrink-0\"><label for=\"admin-drawer\" aria-label=\"Fechar menu\" class=\"drawer-overlay lg:bg-transparent\"></label><aside class=\"w-64 min-h-full flex flex-col bg-base-300 border-r border-base-content/10\" aria-label=\"Menu do painel\"><div class=\"p-4 border-b border-base-content/10\"><h2 class=\"font-semibold text-lg text-base-content\">Admin</h2></div><nav class=\"flex-1 p-2 flex flex-col gap-1\" aria-label=\"Navegação principal\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div><div class=\"drawer-side h-full shrink-0\"><label for=\"admin-drawer\" aria-label=\"Fechar menu\" class=\"drawer-overlay lg:bg-transparent\"></label><aside class=\"w-64 h-full flex flex-col bg-linear-to-b from-base-300 to-base-300/95 border-r border-primary/10 overflow-y-auto\" aria-label=\"Menu do painel\"><div class=\"p-4 border-b border-base-content/10\"><h2 class=\"font-semibold text-lg text-base-content tracking-tight\">Admin</h2></div><nav class=\"flex-1 p-2 flex flex-col gap-1\" aria-label=\"Navegação principal\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if sidebarActive == "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<a href=\"/admin\" class=\"flex items-center gap-2 px-3 py-2 rounded-lg transition-colors bg-primary/20 text-primary\" aria-current=\"page\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<a href=\"/admin\" class=\"nav-link-active flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200\" aria-current=\"page\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -60,7 +60,7 @@ func AdminBody(sidebarActive string, iconDashboard, iconUsers, iconLogOut templa
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<a href=\"/admin\" class=\"flex items-center gap-2 px-3 py-2 rounded-lg transition-colors hover:bg-base-content/10\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<a href=\"/admin\" class=\"nav-link-hover flex items-center gap-2 px-3 py-2 rounded-lg text-base-content/80\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -74,7 +74,7 @@ func AdminBody(sidebarActive string, iconDashboard, iconUsers, iconLogOut templa
 			}
 		}
 		if sidebarActive == "users" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<a href=\"/admin/users\" class=\"flex items-center gap-2 px-3 py-2 rounded-lg transition-colors bg-primary/20 text-primary\" aria-current=\"page\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<a href=\"/admin/users\" class=\"nav-link-active flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200\" aria-current=\"page\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -87,7 +87,7 @@ func AdminBody(sidebarActive string, iconDashboard, iconUsers, iconLogOut templa
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<a href=\"/admin/users\" class=\"flex items-center gap-2 px-3 py-2 rounded-lg transition-colors hover:bg-base-content/10\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<a href=\"/admin/users\" class=\"nav-link-hover flex items-center gap-2 px-3 py-2 rounded-lg text-base-content/80\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -100,7 +100,15 @@ func AdminBody(sidebarActive string, iconDashboard, iconUsers, iconLogOut templa
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</nav><div class=\"p-2 border-t border-base-content/10 space-y-1\"><a href=\"/\" class=\"flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-base-content/10 transition-colors text-base-content/80\"><span>Voltar ao site</span></a><form action=\"/logout\" method=\"POST\" class=\"block\"><button type=\"submit\" class=\"flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-base-content/10 transition-colors w-full text-left text-base-content/80\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</nav><div class=\"p-2 border-t border-base-content/10 space-y-1\"><a href=\"/\" class=\"nav-link-hover flex items-center gap-2 px-3 py-2 rounded-lg text-base-content/70\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconHome).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span>Voltar ao site</span></a><form action=\"/logout\" method=\"POST\" class=\"block\"><button type=\"submit\" class=\"nav-link-hover flex items-center gap-2 px-3 py-2 rounded-lg w-full text-left text-base-content/70\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -108,7 +116,7 @@ func AdminBody(sidebarActive string, iconDashboard, iconUsers, iconLogOut templa
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span>Sair</span></button></form></div></aside></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span>Sair</span></button></form></div></aside></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

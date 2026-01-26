@@ -2,34 +2,82 @@ package components
 
 import "html/template"
 
-// Navbar shows brand and auth state (logged-in user or Entrar/Registrar links).
-// iconEntrar, iconRegistrar, iconSair are trusted HTML from lucide-go (e.g. icons.LogIn(), icons.UserPlus(), icons.LogOut()).
-templ Navbar(displayName string, loggedIn bool, iconEntrar, iconRegistrar, iconSair template.HTML) {
-	<header class="bg-base-100 shadow-sm border-b border-base-300">
-		<div class="max-w-4xl mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-			<a href="/" class="text-xl font-bold text-base-content hover:opacity-90 transition-opacity duration-200">
+// Navbar shows brand and auth state. Adapts to admin context.
+// isAdmin: when true, shows hamburger for admin drawer toggle (mobile only).
+// iconEntrar, iconRegistrar, iconSair, iconMenu are trusted HTML from lucide-go.
+templ Navbar(displayName string, loggedIn bool, isAdmin bool, iconEntrar, iconRegistrar, iconSair, iconMenu template.HTML) {
+	<header class="bg-base-100/95 navbar-blur border-b border-base-content/5 sticky top-0 z-50">
+		<div class="site-container flex items-center justify-between h-14">
+			<!-- Logo with hover glow effect -->
+			<a href="/" class="logo-glow text-xl font-bold tracking-tight text-base-content hover:text-primary transition-colors duration-300">
 				GoHTMX
 			</a>
-			<nav class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-				if loggedIn {
-					<span class="text-sm text-base-content/80 py-1 sm:py-0">Olá, <strong class="text-base-content font-medium">{ displayName }</strong></span>
-					<form method="post" action="/logout" class="inline">
-						<button type="submit" class="btn btn-ghost btn-sm w-full sm:w-auto inline-flex items-center justify-center gap-2 transition-colors duration-200">
-							@templ.Raw(iconSair)
-							<span>Sair</span>
-						</button>
-					</form>
-				} else {
-					<a href="/login" class="btn btn-ghost btn-sm text-center inline-flex items-center justify-center gap-2 transition-colors duration-200">
-						@templ.Raw(iconEntrar)
-						<span>Entrar</span>
-					</a>
-					<a href="/register" class="btn btn-primary btn-sm text-center inline-flex items-center justify-center gap-2 transition-colors duration-200">
-						@templ.Raw(iconRegistrar)
-						<span>Registrar</span>
-					</a>
-				}
-			</nav>
+
+			if isAdmin {
+				<!-- Admin: hamburger toggle for drawer (mobile only) -->
+				<label for="admin-drawer" aria-label="Abrir menu" class="btn btn-ghost btn-square lg:hidden hover:bg-primary/10 transition-all duration-200">
+					@templ.Raw(iconMenu)
+				</label>
+			} else {
+				<!-- Site: Mobile dropdown menu -->
+				<div class="dropdown dropdown-end lg:hidden">
+					<button tabindex="0" aria-label="Abrir menu" class="btn btn-ghost btn-square hover:bg-primary/10 transition-all duration-200">
+						@templ.Raw(iconMenu)
+					</button>
+					<ul tabindex="0" class="dropdown-content dropdown-animate menu bg-base-200/95 navbar-blur rounded-box shadow-xl shadow-black/20 border border-base-content/5 w-52 mt-2 p-2">
+						if loggedIn {
+							<li class="menu-title px-2 py-1">
+								<span class="text-xs text-base-content/60">Olá, { displayName }</span>
+							</li>
+							<li>
+								<form method="post" action="/logout" class="p-0">
+									<button type="submit" class="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-base-content/10 transition-colors duration-200">
+										@templ.Raw(iconSair)
+										<span>Sair</span>
+									</button>
+								</form>
+							</li>
+						} else {
+							<li>
+								<a href="/login" class="flex items-center gap-2">
+									@templ.Raw(iconEntrar)
+									<span>Entrar</span>
+								</a>
+							</li>
+							<li>
+								<a href="/register" class="flex items-center gap-2 text-primary">
+									@templ.Raw(iconRegistrar)
+									<span>Registrar</span>
+								</a>
+							</li>
+						}
+					</ul>
+				</div>
+
+				<!-- Site: Desktop inline navigation -->
+				<nav class="hidden lg:flex items-center gap-1">
+					if loggedIn {
+						<span class="text-sm text-base-content/70 px-3">
+							Olá, <strong class="text-base-content font-medium">{ displayName }</strong>
+						</span>
+						<form method="post" action="/logout" class="inline">
+							<button type="submit" class="btn btn-ghost btn-sm inline-flex items-center gap-2 hover:bg-primary/10 transition-all duration-200">
+								@templ.Raw(iconSair)
+								<span>Sair</span>
+							</button>
+						</form>
+					} else {
+						<a href="/login" class="btn btn-ghost btn-sm inline-flex items-center gap-2 hover:bg-primary/10 transition-all duration-200">
+							@templ.Raw(iconEntrar)
+							<span>Entrar</span>
+						</a>
+						<a href="/register" class="btn btn-primary btn-sm inline-flex items-center gap-2 transition-all duration-200">
+							@templ.Raw(iconRegistrar)
+							<span>Registrar</span>
+						</a>
+					}
+				</nav>
+			}
 		</div>
 	</header>
 }

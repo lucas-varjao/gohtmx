@@ -94,8 +94,8 @@ func runServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager,
 	// Admin area (HTML); requires valid session + admin role
 	adminGroup := r.Group("/admin")
 	adminGroup.Use(middleware.AdminWebMiddleware(authManager, func(c *gin.Context) { renderErrorPage(c, http.StatusForbidden) }))
-	adminGroup.GET("", adminDashboardView)
-	adminGroup.GET("/", adminDashboardView)
+	adminGroup.GET("", func(c *gin.Context) { adminDashboardView(c, db, authManager) })
+	adminGroup.GET("/", func(c *gin.Context) { adminDashboardView(c, db, authManager) })
 	adminGroup.GET("/users", func(c *gin.Context) { adminUsersView(c, db, authManager) })
 	adminGroup.GET("/users/new", func(c *gin.Context) { adminUsersNewView(c, authManager) })
 	adminGroup.POST("/users", func(c *gin.Context) { adminUsersCreatePost(c, db) })

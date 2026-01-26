@@ -67,9 +67,11 @@ func indexViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 		bodyContent,
 		displayName,
 		loggedIn,
+		false, // isAdmin
 		icons.LogIn(),
 		icons.UserPlus(),
 		icons.LogOut(),
+		icons.Menu(),
 		AppVersion,
 		time.Now().Year(),
 	)
@@ -129,9 +131,11 @@ func loginViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 		bodyContent,
 		displayName,
 		loggedIn,
+		false, // isAdmin
 		icons.LogIn(),
 		icons.UserPlus(),
 		icons.LogOut(),
+		icons.Menu(),
 		AppVersion,
 		time.Now().Year(),
 	)
@@ -164,9 +168,11 @@ func registerViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 		bodyContent,
 		displayName,
 		loggedIn,
+		false, // isAdmin
 		icons.LogIn(),
 		icons.UserPlus(),
 		icons.LogOut(),
+		icons.Menu(),
 		AppVersion,
 		time.Now().Year(),
 	)
@@ -228,9 +234,47 @@ func renderErrorPage(c *gin.Context, code int) {
 	}
 }
 
-// adminDashboardView redirects to the users list (main admin view).
-func adminDashboardView(c *gin.Context) {
-	c.Redirect(http.StatusFound, "/admin/users")
+// adminDashboardView renders the admin dashboard with user statistics.
+func adminDashboardView(c *gin.Context, db *gorm.DB, authManager *auth.AuthManager) {
+	var totalUsers, activeUsers, inactiveUsers, adminUsers, regularUsers int64
+
+	db.Model(&models.User{}).Count(&totalUsers)
+	db.Model(&models.User{}).Where("active = ?", true).Count(&activeUsers)
+	db.Model(&models.User{}).Where("active = ?", false).Count(&inactiveUsers)
+	db.Model(&models.User{}).Where("role = ?", "admin").Count(&adminUsers)
+	db.Model(&models.User{}).Where("role = ?", "user").Count(&regularUsers)
+
+	stats := admin.DashboardStats{
+		TotalUsers:    int(totalUsers),
+		ActiveUsers:   int(activeUsers),
+		InactiveUsers: int(inactiveUsers),
+		AdminUsers:    int(adminUsers),
+		RegularUsers:  int(regularUsers),
+	}
+
+	displayName, loggedIn := getNavData(c, authManager)
+	metaTags := pages.MetaTags("admin, dashboard, estatísticas", "Dashboard administrativo")
+	pageContent := admin.DashboardPage(stats, icons.Users(), icons.UsersRound(), icons.UserCheck(), icons.UserX(), icons.Shield(), icons.User())
+	bodyContent := layouts.AdminBody("", icons.LayoutDashboard(), icons.Users(), icons.LogOut(), icons.Home(), pageContent)
+
+	tmpl := layouts.Layout(
+		"Dashboard - Admin - GoHTMX",
+		metaTags,
+		bodyContent,
+		displayName,
+		loggedIn,
+		true, // isAdmin
+		icons.LogIn(),
+		icons.UserPlus(),
+		icons.LogOut(),
+		icons.Menu(),
+		AppVersion,
+		time.Now().Year(),
+	)
+
+	if err := htmx.NewResponse().RenderTempl(c.Request.Context(), c.Writer, tmpl); err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
 }
 
 // adminUsersView renders the admin users list inside the app Layout (navbar + AdminBody + footer).
@@ -259,16 +303,18 @@ func adminUsersView(c *gin.Context, db *gorm.DB, authManager *auth.AuthManager) 
 	displayName, loggedIn := getNavData(c, authManager)
 	metaTags := pages.MetaTags("admin, usuários, gestão", "Gerencie usuários do sistema.")
 	pageContent := admin.UsersPage(views, icons.CircleCheckForStatus(), icons.ValidationFail(), icons.Trash2(), icons.Error())
-	bodyContent := layouts.AdminBody("users", icons.LayoutDashboard(), icons.Users(), icons.LogOut(), pageContent)
+	bodyContent := layouts.AdminBody("users", icons.LayoutDashboard(), icons.Users(), icons.LogOut(), icons.Home(), pageContent)
 	tmpl := layouts.Layout(
 		"Usuários - Admin - GoHTMX",
 		metaTags,
 		bodyContent,
 		displayName,
 		loggedIn,
+		true, // isAdmin
 		icons.LogIn(),
 		icons.UserPlus(),
 		icons.LogOut(),
+		icons.Menu(),
 		AppVersion,
 		time.Now().Year(),
 	)
@@ -373,16 +419,18 @@ func adminUsersNewView(c *gin.Context, authManager *auth.AuthManager) {
 	displayName, loggedIn := getNavData(c, authManager)
 	metaTags := pages.MetaTags("admin, novo usuário, criar conta", "Criar novo usuário")
 	pageContent := admin.UsersNewPage(errorMsg, icons.Error())
-	bodyContent := layouts.AdminBody("users", icons.LayoutDashboard(), icons.Users(), icons.LogOut(), pageContent)
+	bodyContent := layouts.AdminBody("users", icons.LayoutDashboard(), icons.Users(), icons.LogOut(), icons.Home(), pageContent)
 	tmpl := layouts.Layout(
 		"Novo usuário - Admin - GoHTMX",
 		metaTags,
 		bodyContent,
 		displayName,
 		loggedIn,
+		true, // isAdmin
 		icons.LogIn(),
 		icons.UserPlus(),
 		icons.LogOut(),
+		icons.Menu(),
 		AppVersion,
 		time.Now().Year(),
 	)

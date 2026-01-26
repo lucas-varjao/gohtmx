@@ -93,7 +93,7 @@ func UsersNewPage(errorMessage string, errorIcon template.HTML) templ.Component 
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"p-4 sm:p-6\"><div class=\"max-w-lg w-full\"><h1 class=\"text-2xl font-semibold text-base-content\">Novo usuário</h1><p class=\"text-base-content/70 text-sm mt-0.5\">Preencha os dados para criar uma conta.</p><div class=\"card bg-base-100 border border-base-content/10 mt-4\"><div class=\"card-body\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"p-4 sm:p-6 page-content\"><div class=\"max-w-lg w-full\"><h1 class=\"text-2xl font-semibold text-base-content\">Novo usuário</h1><p class=\"text-base-content/70 text-sm mt-0.5\">Preencha os dados para criar uma conta.</p><div class=\"card bg-base-100 border border-base-content/10 mt-4\"><div class=\"card-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

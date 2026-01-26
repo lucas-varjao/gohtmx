@@ -8,8 +8,9 @@ import (
 )
 
 // Layout is the single app shell: head, Navbar, body content slot, Footer.
-// navIconEntrar, navIconRegistrar, navIconSair are trusted HTML from lucide-go for navbar buttons.
-templ Layout(title string, metaTags, bodyContent templ.Component, navDisplayName string, navLoggedIn bool, navIconEntrar, navIconRegistrar, navIconSair template.HTML, footerVersion string, footerYear int) {
+// isAdmin: when true, navbar shows admin toggle and footer is hidden.
+// navIconEntrar, navIconRegistrar, navIconSair, navIconMenu are trusted HTML from lucide-go for navbar buttons.
+templ Layout(title string, metaTags, bodyContent templ.Component, navDisplayName string, navLoggedIn bool, isAdmin bool, navIconEntrar, navIconRegistrar, navIconSair, navIconMenu template.HTML, footerVersion string, footerYear int) {
 	<!DOCTYPE html>
 	<html lang="pt-BR" data-theme="smartnavy">
 		<head>
@@ -28,12 +29,14 @@ templ Layout(title string, metaTags, bodyContent templ.Component, navDisplayName
 			<link rel="icon" href="/static/favicon.png" sizes="any"/>
 			<link href="/static/styles.css" rel="stylesheet"/>
 		</head>
-		<body class="min-h-screen flex flex-col bg-base-200" onload={ pages.BodyScripts() }>
-			@components.Navbar(navDisplayName, navLoggedIn, navIconEntrar, navIconRegistrar, navIconSair)
-			<main class="flex-1 flex flex-col">
+		<body class={ templ.KV("h-screen overflow-hidden", isAdmin), templ.KV("min-h-screen", !isAdmin), "flex flex-col bg-base-200" } onload={ pages.BodyScripts() }>
+			@components.Navbar(navDisplayName, navLoggedIn, isAdmin, navIconEntrar, navIconRegistrar, navIconSair, navIconMenu)
+			<main class={ templ.KV("flex-1 min-h-0", isAdmin), templ.KV("flex-1", !isAdmin), "flex flex-col" }>
 				@bodyContent
 			</main>
-			@components.Footer(footerVersion, footerYear, "GoHTMX")
+			if !isAdmin {
+				@components.Footer(footerVersion, footerYear, "GoHTMX")
+			}
 			<script src="/static/scripts.js"></script>
 		</body>
 	</html>

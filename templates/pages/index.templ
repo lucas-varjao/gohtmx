@@ -47,80 +47,80 @@ templ BodyContent(h1, text string) {
 
 // IndexPage renders the main index content (navbar/footer come from Layout).
 templ IndexPage(generatedAt string) {
-	<div class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+	<div class="site-container py-8 space-y-8 page-content">
 		<div class="alert bg-success/10 border-success/20 text-success-content">
 			<span>Stack ativa: Go, TEMPL, HTMX, Alpine.js, Tailwind, DaisyUI.</span>
 		</div>
 
 		<section>
-			<h2 class="text-2xl font-semibold mb-4 text-base-content">Demonstração da stack</h2>
+			<h2 class="text-2xl font-semibold mb-4 text-base-content tracking-tight">Demonstração da stack</h2>
 			<div class="grid gap-4 md:grid-cols-2">
-					<div class="card bg-base-100 shadow-xl">
-						<div class="card-body">
-							<h3 class="card-title text-lg">
-								TEMPL
-								<span class="badge badge-ghost">servidor</span>
-							</h3>
-							<p class="text-base-content/80">
-								Página gerada em <strong>{ generatedAt }</strong>.
-							</p>
-						</div>
-					</div>
-
-					<div class="card bg-base-100 shadow-xl">
-						<div class="card-body">
-							<h3 class="card-title text-lg">
-								HTMX
-								<span class="badge badge-ghost">partial</span>
-							</h3>
-							<button
-								type="button"
-								class="btn btn-primary btn-sm"
-								hx-get="/api/hello-world"
-								hx-target="#htmx-result"
-								hx-swap="innerHTML"
-							>
-								Testar HTMX
-							</button>
-							<div id="htmx-result" class="min-h-6 mt-2 text-sm text-base-content/80"></div>
-						</div>
-					</div>
-
-					<div class="card bg-base-100 shadow-xl" x-data="{ count: 0 }">
-						<div class="card-body">
-							<h3 class="card-title text-lg">
-								Alpine.js
-								<span class="badge badge-ghost">cliente</span>
-							</h3>
-							<p class="text-base-content/80">
-								Contador: <span x-text="count">0</span>
-							</p>
-							<button type="button" class="btn btn-secondary btn-sm" @click="count++">
-								Incrementar
-							</button>
-						</div>
-					</div>
-
-					<div class="card bg-base-100 shadow-xl">
-						<div class="card-body">
-							<h3 class="card-title text-lg">
-								Backend (Go + Gin)
-								<span class="badge badge-ghost">/health</span>
-							</h3>
-							<button
-								type="button"
-								class="btn btn-accent btn-sm"
-								hx-get="/health"
-								hx-target="#health-result"
-								hx-swap="innerHTML"
-							>
-								Verificar backend
-							</button>
-							<div id="health-result" class="min-h-6 mt-2 text-sm font-mono text-base-content/80"></div>
-						</div>
+				<div class="card bg-base-100 shadow-xl border border-base-content/5">
+					<div class="card-body">
+						<h3 class="card-title text-lg">
+							TEMPL
+							<span class="badge badge-ghost">servidor</span>
+						</h3>
+						<p class="text-base-content/80">
+							Página gerada em <strong>{ generatedAt }</strong>.
+						</p>
 					</div>
 				</div>
-			</section>
+
+				<div class="card bg-base-100 shadow-xl border border-base-content/5">
+					<div class="card-body">
+						<h3 class="card-title text-lg">
+							HTMX
+							<span class="badge badge-ghost">partial</span>
+						</h3>
+						<button
+							type="button"
+							class="btn btn-primary btn-sm"
+							hx-get="/api/hello-world"
+							hx-target="#htmx-result"
+							hx-swap="innerHTML"
+						>
+							Testar HTMX
+						</button>
+						<div id="htmx-result" class="min-h-6 mt-2 text-sm text-base-content/80"></div>
+					</div>
+				</div>
+
+				<div class="card bg-base-100 shadow-xl border border-base-content/5" x-data="{ count: 0 }">
+					<div class="card-body">
+						<h3 class="card-title text-lg">
+							Alpine.js
+							<span class="badge badge-ghost">cliente</span>
+						</h3>
+						<p class="text-base-content/80">
+							Contador: <span x-text="count">0</span>
+						</p>
+						<button type="button" class="btn btn-secondary btn-sm" @click="count++">
+							Incrementar
+						</button>
+					</div>
+				</div>
+
+				<div class="card bg-base-100 shadow-xl border border-base-content/5">
+					<div class="card-body">
+						<h3 class="card-title text-lg">
+							Backend (Go + Gin)
+							<span class="badge badge-ghost">/health</span>
+						</h3>
+						<button
+							type="button"
+							class="btn btn-accent btn-sm"
+							hx-get="/health"
+							hx-target="#health-result"
+							hx-swap="innerHTML"
+						>
+							Verificar backend
+						</button>
+						<div id="health-result" class="min-h-6 mt-2 text-sm font-mono text-base-content/80"></div>
+					</div>
+				</div>
+			</div>
+		</section>
 	</div>
 }
 

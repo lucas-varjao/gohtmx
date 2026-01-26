@@ -92,3 +92,33 @@ func Trash2() template.HTML {
 func CircleCheckForStatus() template.HTML {
 	return lucide.CircleCheck(lucide.Options{Color: colorCurrent, Class: classButton})
 }
+
+// Menu returns the hamburger menu icon for mobile navigation toggle.
+func Menu() template.HTML {
+	return lucide.Menu(lucide.Options{Color: colorCurrent, Class: "w-6 h-6 shrink-0"})
+}
+
+// Home returns the home icon for "Voltar ao site" link in admin sidebar.
+func Home() template.HTML {
+	return lucide.Home(lucide.Options{Color: colorCurrent, Class: classButton})
+}
+
+// UserCheck returns the user-check icon for active users stat in dashboard.
+func UserCheck() template.HTML {
+	return lucide.UserCheck(lucide.Options{Color: colorCurrent, Class: classButton})
+}
+
+// UserX returns the user-x icon for inactive users stat in dashboard.
+func UserX() template.HTML {
+	return lucide.UserX(lucide.Options{Color: colorCurrent, Class: classButton})
+}
+
+// Shield returns the shield icon for admin users stat in dashboard.
+func Shield() template.HTML {
+	return lucide.Shield(lucide.Options{Color: colorCurrent, Class: classButton})
+}
+
+// UsersRound returns the users-round icon for total users stat in dashboard.
+func UsersRound() template.HTML {
+	return lucide.UsersRound(lucide.Options{Color: colorCurrent, Class: classButton})
+}

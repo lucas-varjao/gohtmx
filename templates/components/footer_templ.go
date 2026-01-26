@@ -30,7 +30,7 @@ func Footer(version string, year int, trademark string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<footer class=\"mt-auto border-t border-base-300 bg-base-100\"><div class=\"max-w-4xl mx-auto px-4 py-4\"><div class=\"flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-footer-muted\"><span>Versão ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<footer class=\"mt-auto border-t border-base-content/5 bg-base-100/50\"><div class=\"site-container py-4\"><div class=\"flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-footer-muted\"><span>Versão ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -43,7 +43,7 @@ func Footer(version string, year int, trademark string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</span> <span>·</span> <span>© ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</span> <span class=\"text-base-content/30\">·</span> <span>© ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
