@@ -101,8 +101,8 @@ templ NewUserForm(errorMessage string, errorIcon template.HTML, inModal bool) {
 // UsersNewPage renders the new-user form inside the dashboard content area (página dedicada /admin/users/new).
 // errorIcon is trusted HTML from lucide-go.
 templ UsersNewPage(errorMessage string, errorIcon template.HTML) {
-	<div class="p-6">
-		<div class="max-w-lg">
+	<div class="p-4 sm:p-6">
+		<div class="max-w-lg w-full">
 			<h1 class="text-2xl font-semibold text-base-content">Novo usuário</h1>
 			<p class="text-base-content/70 text-sm mt-0.5">Preencha os dados para criar uma conta.</p>
 			<div class="card bg-base-100 border border-base-content/10 mt-4">

@@ -6,7 +6,10 @@ import (
 	"github.com/lucas-varjao/gohtmx/templates/pages"
 )
 
-// DashboardLayout is the admin shell: head, fixed sidebar (full height), and main content area.
+// DashboardLayout is deprecated. Admin pages use layouts.Layout + layouts.AdminBody for navbar/footer and responsive drawer.
+// Kept only for reference; new code must use Layout(bodyContent=AdminBody(...)).
+//
+// DashboardLayout was the admin shell: head, fixed sidebar (full height), and main content area.
 // sidebarActive is the path segment used to highlight the active nav item ("", "users", etc.).
 // iconDashboard, iconUsers, iconLogOut are trusted HTML from lucide-go for sidebar links.
 templ DashboardLayout(title string, metaTags templ.Component, sidebarActive string, iconDashboard, iconUsers, iconLogOut template.HTML, content templ.Component) {

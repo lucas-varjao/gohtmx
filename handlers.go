@@ -233,8 +233,8 @@ func adminDashboardView(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/admin/users")
 }
 
-// adminUsersView renders the admin users list inside the dashboard layout.
-func adminUsersView(c *gin.Context, db *gorm.DB) {
+// adminUsersView renders the admin users list inside the app Layout (navbar + AdminBody + footer).
+func adminUsersView(c *gin.Context, db *gorm.DB, authManager *auth.AuthManager) {
 	var users []models.User
 	if err := db.Order("created_at DESC").Find(&users).Error; err != nil {
 		renderErrorPage(c, http.StatusInternalServerError)
@@ -256,16 +256,21 @@ func adminUsersView(c *gin.Context, db *gorm.DB) {
 			LastLogin:   lastLogin,
 		})
 	}
+	displayName, loggedIn := getNavData(c, authManager)
 	metaTags := pages.MetaTags("admin, usuários, gestão", "Gerencie usuários do sistema.")
-	content := admin.UsersPage(views, icons.CircleCheckForStatus(), icons.ValidationFail(), icons.Trash2(), icons.Error())
-	tmpl := layouts.DashboardLayout(
+	pageContent := admin.UsersPage(views, icons.CircleCheckForStatus(), icons.ValidationFail(), icons.Trash2(), icons.Error())
+	bodyContent := layouts.AdminBody("users", icons.LayoutDashboard(), icons.Users(), icons.LogOut(), pageContent)
+	tmpl := layouts.Layout(
 		"Usuários - Admin - GoHTMX",
 		metaTags,
-		"users",
-		icons.LayoutDashboard(),
-		icons.Users(),
+		bodyContent,
+		displayName,
+		loggedIn,
+		icons.LogIn(),
+		icons.UserPlus(),
 		icons.LogOut(),
-		content,
+		AppVersion,
+		time.Now().Year(),
 	)
 	if err := htmx.NewResponse().RenderTempl(c.Request.Context(), c.Writer, tmpl); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -359,22 +364,27 @@ func adminUserDeletePost(c *gin.Context, db *gorm.DB, authManager *auth.AuthMana
 	c.Redirect(http.StatusFound, "/admin/users")
 }
 
-// adminUsersNewView renders the new-user form inside the dashboard layout.
-func adminUsersNewView(c *gin.Context) {
+// adminUsersNewView renders the new-user form inside the app Layout (navbar + AdminBody + footer).
+func adminUsersNewView(c *gin.Context, authManager *auth.AuthManager) {
 	errorMsg := c.Query("error")
 	if errorMsg == "" {
 		errorMsg = c.GetString("error")
 	}
+	displayName, loggedIn := getNavData(c, authManager)
 	metaTags := pages.MetaTags("admin, novo usuário, criar conta", "Criar novo usuário")
-	content := admin.UsersNewPage(errorMsg, icons.Error())
-	tmpl := layouts.DashboardLayout(
+	pageContent := admin.UsersNewPage(errorMsg, icons.Error())
+	bodyContent := layouts.AdminBody("users", icons.LayoutDashboard(), icons.Users(), icons.LogOut(), pageContent)
+	tmpl := layouts.Layout(
 		"Novo usuário - Admin - GoHTMX",
 		metaTags,
-		"users",
-		icons.LayoutDashboard(),
-		icons.Users(),
+		bodyContent,
+		displayName,
+		loggedIn,
+		icons.LogIn(),
+		icons.UserPlus(),
 		icons.LogOut(),
-		content,
+		AppVersion,
+		time.Now().Year(),
 	)
 	if err := htmx.NewResponse().RenderTempl(c.Request.Context(), c.Writer, tmpl); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)

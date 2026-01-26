@@ -14,7 +14,10 @@ import (
 	"github.com/lucas-varjao/gohtmx/templates/pages"
 )
 
-// DashboardLayout is the admin shell: head, fixed sidebar (full height), and main content area.
+// DashboardLayout is deprecated. Admin pages use layouts.Layout + layouts.AdminBody for navbar/footer and responsive drawer.
+// Kept only for reference; new code must use Layout(bodyContent=AdminBody(...)).
+//
+// DashboardLayout was the admin shell: head, fixed sidebar (full height), and main content area.
 // sidebarActive is the path segment used to highlight the active nav item ("", "users", etc.).
 // iconDashboard, iconUsers, iconLogOut are trusted HTML from lucide-go for sidebar links.
 func DashboardLayout(title string, metaTags templ.Component, sidebarActive string, iconDashboard, iconUsers, iconLogOut template.HTML, content templ.Component) templ.Component {
@@ -45,7 +48,7 @@ func DashboardLayout(title string, metaTags templ.Component, sidebarActive strin
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/dashboard.templ`, Line: 22, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/dashboard.templ`, Line: 25, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {

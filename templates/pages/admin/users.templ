@@ -71,13 +71,13 @@ templ UserRow(u UserView, iconActive, iconInactive, iconDelete template.HTML) {
 // iconActive, iconDelete e iconError são trusted HTML from lucide-go (iconError para erros do form novo usuário).
 templ UsersPage(users []UserView, iconActive, iconInactive, iconDelete, iconError template.HTML) {
 	<div
-		class="p-6"
+		class="p-4 sm:p-6"
 		id="admin-users-page"
 		x-data="{ deleteUserId: null, deleteUsername: '' }"
 		@click="const btn = $event.target.closest('[data-delete-user]'); if (btn) { deleteUserId = btn.getAttribute('data-delete-id'); deleteUsername = btn.getAttribute('data-delete-username') || ''; $refs.deleteDialog.showModal(); }"
 	>
 		<div class="flex flex-col gap-4">
-			<div class="flex items-center justify-between">
+			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<h1 class="text-2xl font-semibold text-base-content">Usuários</h1>
 					<p class="text-base-content/70 text-sm mt-0.5">Gerencie contas, roles e status.</p>
