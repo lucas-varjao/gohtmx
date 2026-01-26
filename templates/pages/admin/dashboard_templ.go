@@ -33,7 +33,7 @@ func DashboardPage(stats DashboardStats, iconUsers, iconUsersRound, iconUserChec
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"p-4 sm:p-6 page-content\"><div class=\"mb-4\"><h1 class=\"text-2xl font-semibold text-base-content tracking-tight\">Dashboard</h1><p class=\"text-base-content/70 text-sm mt-0.5\">Visão geral do sistema</p></div><!-- Card Container: Usuários (compacto) --><div class=\"dashboard-card max-w-xl\"><div class=\"dashboard-card-header-compact\"><div class=\"dashboard-card-icon-sm\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"p-4 sm:p-6 page-content\"><div class=\"flex flex-col gap-2 mb-4\"><h1 class=\"text-2xl font-semibold text-base-content tracking-tight\">Dashboard</h1><p class=\"text-base-content/70 text-sm mt-0.5\">Visão geral do sistema</p></div><!-- Container Geral de Cards --><div class=\"flex flex-wrap gap-4 justify-evenly\"><!-- Card Container: Usuários --><div class=\"flex flex-col bg-base-100 border border-base-content/10 rounded-lg overflow-hidden w-fit\"><!-- Header --><div class=\"flex items-center gap-3 px-4 py-3 border-b border-base-content/10 bg-base-200/50\"><div class=\"flex items-center justify-center w-8 h-8 rounded-md bg-primary/15 text-primary\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -41,7 +41,7 @@ func DashboardPage(stats DashboardStats, iconUsers, iconUsersRound, iconUserChec
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div><h2 class=\"dashboard-card-title-sm\">Usuários</h2><p class=\"dashboard-card-desc-sm\">Estatísticas de contas</p></div></div><div class=\"dashboard-card-body-compact\"><!-- Status das contas --><div class=\"stat-row\"><div class=\"stat-chip stat-chip-turquoise\"><div class=\"stat-chip-icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div><h2 class=\"text-sm font-semibold text-base-content leading-tight\">Usuários</h2><p class=\"text-xs text-base-content/50\">Estatísticas de contas</p></div></div><!-- Body --><div class=\"flex flex-col p-4 space-y-2\"><!-- Status das contas --><div class=\"flex flex-wrap gap-2 items-center justify-center-safe\"><div class=\"flex items-center gap-2 bg-base-200/50 rounded-md px-3 py-2 border-l-2 border-accent hover:bg-base-200/80 transition-colors\"><span class=\"text-base-content/40\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -49,20 +49,20 @@ func DashboardPage(stats DashboardStats, iconUsers, iconUsersRound, iconUserChec
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"stat-chip-content\"><span class=\"stat-chip-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</span> <span class=\"text-xl font-bold text-base-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(intToString(stats.TotalUsers))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/dashboard.templ`, Line: 34, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/dashboard.templ`, Line: 35, Col: 88}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span class=\"stat-chip-label\">Total</span></div></div><div class=\"stat-chip stat-chip-green\"><div class=\"stat-chip-icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span class=\"text-[11px] text-base-content/50 uppercase tracking-wide\">Total</span></div><div class=\"flex items-center gap-2 bg-base-200/50 rounded-md px-3 py-2 border-l-2 border-success hover:bg-base-200/80 transition-colors\"><span class=\"text-base-content/40\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -70,20 +70,20 @@ func DashboardPage(stats DashboardStats, iconUsers, iconUsersRound, iconUserChec
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"stat-chip-content\"><span class=\"stat-chip-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span> <span class=\"text-xl font-bold text-base-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(intToString(stats.ActiveUsers))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/dashboard.templ`, Line: 43, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/dashboard.templ`, Line: 42, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> <span class=\"stat-chip-label\">Ativos</span></div></div><div class=\"stat-chip stat-chip-orange\"><div class=\"stat-chip-icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> <span class=\"text-[11px] text-base-content/50 uppercase tracking-wide\">Ativos</span></div><div class=\"flex items-center gap-2 bg-base-200/50 rounded-md px-3 py-2 border-l-2 border-warning hover:bg-base-200/80 transition-colors\"><span class=\"text-base-content/40\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -91,20 +91,20 @@ func DashboardPage(stats DashboardStats, iconUsers, iconUsersRound, iconUserChec
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><div class=\"stat-chip-content\"><span class=\"stat-chip-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span> <span class=\"text-xl font-bold text-base-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(intToString(stats.InactiveUsers))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/dashboard.templ`, Line: 52, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/dashboard.templ`, Line: 49, Col: 91}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> <span class=\"stat-chip-label\">Inativos</span></div></div></div><!-- Por função --><div class=\"stat-row mt-2\"><div class=\"stat-chip stat-chip-blue\"><div class=\"stat-chip-icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> <span class=\"text-[11px] text-base-content/50 uppercase tracking-wide\">Inativos</span></div></div><!-- Por função --><div class=\"flex flex-wrap gap-2 items-center justify-center-safe\"><div class=\"flex items-center gap-2 bg-base-200/50 rounded-md px-3 py-2 border-l-2 border-info hover:bg-base-200/80 transition-colors\"><span class=\"text-base-content/40\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -112,20 +112,20 @@ func DashboardPage(stats DashboardStats, iconUsers, iconUsersRound, iconUserChec
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div class=\"stat-chip-content\"><span class=\"stat-chip-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> <span class=\"text-xl font-bold text-base-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(intToString(stats.AdminUsers))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/dashboard.templ`, Line: 65, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/dashboard.templ`, Line: 59, Col: 88}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span> <span class=\"stat-chip-label\">Admins</span></div></div><div class=\"stat-chip stat-chip-gray\"><div class=\"stat-chip-icon\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span> <span class=\"text-[11px] text-base-content/50 uppercase tracking-wide\">Admins</span></div><div class=\"flex items-center gap-2 bg-base-200/50 rounded-md px-3 py-2 border-l-2 border-neutral hover:bg-base-200/80 transition-colors\"><span class=\"text-base-content/40\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -133,20 +133,20 @@ func DashboardPage(stats DashboardStats, iconUsers, iconUsersRound, iconUserChec
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"stat-chip-content\"><span class=\"stat-chip-value\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span> <span class=\"text-xl font-bold text-base-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(intToString(stats.RegularUsers))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/dashboard.templ`, Line: 74, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/dashboard.templ`, Line: 66, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span> <span class=\"stat-chip-label\">Users</span></div></div></div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span> <span class=\"text-[11px] text-base-content/50 uppercase tracking-wide\">Users</span></div></div></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
