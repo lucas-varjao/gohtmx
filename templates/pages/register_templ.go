@@ -8,8 +8,15 @@ package pages
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-// RegisterPage renders the registration page
-func RegisterPage(errorMessage string) templ.Component {
+import (
+	"html/template"
+
+	"github.com/lucas-varjao/gohtmx/templates/components"
+)
+
+// RegisterPage renders the registration page.
+// errorIcon, iconSubmit, iconUser, iconMail, iconUserCircle, iconLock, iconValidationSuccess, iconValidationFail are trusted HTML from lucide-go.
+func RegisterPage(errorMessage string, errorIcon template.HTML, iconSubmit template.HTML, iconUser template.HTML, iconMail template.HTML, iconUserCircle template.HTML, iconLock template.HTML, iconValidationSuccess template.HTML, iconValidationFail template.HTML) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -35,25 +42,148 @@ func RegisterPage(errorMessage string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if errorMessage != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"alert alert-error mb-4\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"stroke-current shrink-0 h-6 w-6\" fill=\"none\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg> <span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"mb-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 string
-			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(errorMessage)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/register.templ`, Line: 13, Col: 25}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			templ_7745c5c3_Err = components.ErrorAlert(errorMessage, errorIcon).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</span></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form hx-post=\"/auth/register\" hx-target=\"#register-error\" hx-swap=\"innerHTML\" hx-on::after-request=\"if(event.detail.xhr.status === 200) { window.location.href = '/login'; }\" class=\"space-y-4\" x-data=\"{ password: '', confirmPassword: '', passwordsMatch: true }\"><div id=\"register-error\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Nome de Usuário</span></label> <input type=\"text\" name=\"username\" placeholder=\"nome de usuário\" class=\"input input-bordered w-full\" required minlength=\"3\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Email</span></label> <input type=\"email\" name=\"email\" placeholder=\"email@exemplo.com\" class=\"input input-bordered w-full\" required></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Nome de Exibição</span></label> <input type=\"text\" name=\"display_name\" placeholder=\"seu nome\" class=\"input input-bordered w-full\" required></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Senha</span></label> <input type=\"password\" name=\"password\" placeholder=\"senha\" class=\"input input-bordered w-full\" required minlength=\"8\" x-model=\"password\" @input=\"passwordsMatch = confirmPassword === '' || password === confirmPassword\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Confirmar Senha</span></label> <input type=\"password\" name=\"confirm_password\" placeholder=\"confirmar senha\" class=\"input input-bordered w-full\" required x-model=\"confirmPassword\" @input=\"passwordsMatch = password === confirmPassword\"> <label class=\"label\" x-show=\"!passwordsMatch\"><span class=\"label-text-alt text-error\">As senhas não coincidem</span></label></div><div class=\"form-control mt-6\"><button type=\"submit\" class=\"btn btn-primary w-full\" :disabled=\"!passwordsMatch\">Criar Conta</button></div></form><div class=\"divider\">ou</div><div class=\"text-center\"><p class=\"text-sm text-base-content/70\">Já tem uma conta?  <a href=\"/login\" class=\"link link-primary transition-colors duration-200\">Entrar</a></p></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form hx-post=\"/auth/register\" hx-target=\"#register-error\" hx-swap=\"innerHTML\" hx-on::after-request=\"if(event.detail.xhr.status === 200) { window.location.href = '/login'; }\" class=\"space-y-4\" x-data=\"{ password: '', confirmPassword: '', passwordsMatch: true, passwordReady: false }\"><div id=\"register-error\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text inline-flex items-center gap-1.5\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconUser).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span>Nome de Usuário</span></span></label> <input type=\"text\" name=\"username\" placeholder=\"nome de usuário\" class=\"input input-bordered w-full\" required minlength=\"3\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text inline-flex items-center gap-1.5\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconMail).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span>Email</span></span></label> <input type=\"email\" name=\"email\" placeholder=\"email@exemplo.com\" class=\"input input-bordered w-full\" required></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text inline-flex items-center gap-1.5\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconUserCircle).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span>Nome de Exibição</span></span></label> <input type=\"text\" name=\"display_name\" placeholder=\"seu nome\" class=\"input input-bordered w-full\" required></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text inline-flex items-center gap-1.5\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconLock).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span>Senha</span></span></label> <input type=\"password\" name=\"password\" placeholder=\"senha\" class=\"input input-bordered w-full\" required minlength=\"8\" x-model=\"password\" @input=\"passwordsMatch = confirmPassword === '' || password === confirmPassword; passwordReady = password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)\"><ul class=\"mt-1 space-y-0.25 text-xs opacity-80 list-none flex flex-col\" aria-live=\"polite\"><li class=\"flex items-center gap-1\" :class=\"password.length >= 8 ? 'text-success' : 'text-error'\"><span x-show=\"password.length >= 8\" x-cloak>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconValidationSuccess).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> <span x-show=\"password.length < 8\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconValidationFail).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span> <span>Pelo menos 8 caracteres</span></li><li class=\"flex items-center gap-1\" :class=\"/[A-Z]/.test(password) ? 'text-success' : 'text-error'\"><span x-show=\"/[A-Z]/.test(password)\" x-cloak>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconValidationSuccess).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span> <span x-show=\"!/[A-Z]/.test(password)\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconValidationFail).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span> <span>Pelo menos uma letra maiúscula</span></li><li class=\"flex items-center gap-1\" :class=\"/[a-z]/.test(password) ? 'text-success' : 'text-error'\"><span x-show=\"/[a-z]/.test(password)\" x-cloak>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconValidationSuccess).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span> <span x-show=\"!/[a-z]/.test(password)\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconValidationFail).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</span> <span>Pelo menos uma letra minúscula</span></li><li class=\"flex items-center gap-1\" :class=\"/[0-9]/.test(password) ? 'text-success' : 'text-error'\"><span x-show=\"/[0-9]/.test(password)\" x-cloak>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconValidationSuccess).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</span> <span x-show=\"!/[0-9]/.test(password)\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconValidationFail).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</span> <span>Pelo menos um número</span></li><li class=\"flex items-center gap-1\" :class=\"/[^A-Za-z0-9]/.test(password) ? 'text-success' : 'text-error'\"><span x-show=\"/[^A-Za-z0-9]/.test(password)\" x-cloak>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconValidationSuccess).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</span> <span x-show=\"!/[^A-Za-z0-9]/.test(password)\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconValidationFail).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span> <span>Pelo menos um caractere especial</span></li></ul></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text inline-flex items-center gap-1.5\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconLock).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<span>Confirmar Senha</span></span></label> <input type=\"password\" name=\"confirm_password\" placeholder=\"confirmar senha\" class=\"input input-bordered w-full\" required x-model=\"confirmPassword\" @input=\"passwordsMatch = password === confirmPassword\"> <label class=\"label\" x-show=\"!passwordsMatch\"><span class=\"label-text-alt text-error\">As senhas não coincidem</span></label></div><div class=\"form-control mt-6\"><button type=\"submit\" class=\"btn btn-primary w-full inline-flex items-center justify-center gap-2\" :disabled=\"!passwordsMatch || !passwordReady\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconSubmit).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<span>Criar Conta</span></button></div></form><div class=\"divider\">ou</div><div class=\"text-center\"><p class=\"text-sm text-base-content/70\">Já tem uma conta?  <a href=\"/login\" class=\"link link-primary transition-colors duration-200\">Entrar</a></p></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

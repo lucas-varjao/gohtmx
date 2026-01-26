@@ -1,11 +1,11 @@
-# Makefile para GoHTMX Backend
+# Makefile para GoHTMX (Go + TEMPL + HTMX + Tailwind/DaisyUI)
+# Projeto na raiz: main.go, server.go, go.mod
 
 # Variáveis
 BINARY_NAME=gohtmx
-BINARY_PATH=backend/cmd/server
-BACKEND_DIR=backend
-BUILD_DIR=backend/bin
-COVERAGE_DIR=backend/coverage
+BUILD_DIR=bin
+COVERAGE_DIR=coverage
+TMP_DIR=tmp
 
 # Cores para output
 GREEN=\033[0;32m
@@ -13,86 +13,116 @@ YELLOW=\033[0;33m
 RED=\033[0;31m
 NC=\033[0m # No Color
 
-.PHONY: help build run test test-coverage clean install format vet lint mod-tidy run-dev
+.PHONY: help build run run-dev test test-short test-coverage test-integration clean \
+	install mod-tidy format vet lint check check-go version \
+	templ-generate assets-build assets-watch assets-dev dev
 
-# Comando padrão
 .DEFAULT_GOAL := help
 
 help: ## Mostra esta mensagem de ajuda
 	@echo -e "$(GREEN)Comandos disponíveis:$(NC)"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(YELLOW)%-20s$(NC) %s\n", $$1, $$2}'
 
-build: ## Compila o servidor
+# ---- Go ----
+
+templ-generate: ## Gera código Go a partir dos arquivos .templ
+	@echo -e "$(GREEN)Gerando templates...$(NC)"
+	@templ generate
+	@echo -e "$(GREEN)Templates gerados$(NC)"
+
+build: templ-generate ## Compila o servidor (gera templ antes)
 	@echo -e "$(GREEN)Compilando servidor...$(NC)"
 	@mkdir -p $(BUILD_DIR)
-	@cd $(BACKEND_DIR) && go build -o bin/$(BINARY_NAME) ./cmd/server
+	@go build -o $(BUILD_DIR)/$(BINARY_NAME) .
 	@echo -e "$(GREEN)Build concluído: $(BUILD_DIR)/$(BINARY_NAME)$(NC)"
 
 run: build ## Compila e executa o servidor
 	@echo -e "$(GREEN)Executando servidor...$(NC)"
-	@cd $(BACKEND_DIR) && ./bin/$(BINARY_NAME)
+	@./$(BUILD_DIR)/$(BINARY_NAME)
 
-run-dev: ## Executa o servidor em modo desenvolvimento (sem build)
-	@echo -e "$(GREEN)Executando servidor em modo desenvolvimento...$(NC)"
-	@cd $(BACKEND_DIR) && go run ./cmd/server
+run-dev: ## Executa o servidor em modo desenvolvimento (go run)
+	@echo -e "$(GREEN)Executando em modo dev...$(NC)"
+	@go run .
+
+dev: ## Hot reload: build de assets + templ + go (usa air se instalado)
+	@command -v air >/dev/null 2>&1 || { echo -e "$(YELLOW)air não instalado. Use: go install github.com/air-verse/air@latest$(NC)"; go run . ; exit 0; }
+	@air
+
+# ---- Frontend (bun) ----
+
+assets-build: ## Compila CSS/JS para ./static (parcel)
+	@echo -e "$(GREEN)Compilando assets...$(NC)"
+	@bun run build
+	@echo -e "$(GREEN)Assets em ./static$(NC)"
+
+assets-watch: ## Watch de assets (parcel watch)
+	@bun run watch
+
+assets-dev: ## Build de assets sem otimização (dev)
+	@bun run dev
+
+# ---- Testes ----
 
 test: ## Executa todos os testes
 	@echo -e "$(GREEN)Executando testes...$(NC)"
-	@cd $(BACKEND_DIR) && go test -v ./...
+	@go test -v ./...
 
-test-short: ## Executa apenas testes rápidos (sem integração)
+test-short: ## Apenas testes rápidos (sem integração)
 	@echo -e "$(GREEN)Executando testes rápidos...$(NC)"
-	@cd $(BACKEND_DIR) && go test -short -v ./...
+	@go test -short -v ./...
 
-test-coverage: ## Executa testes com cobertura
+test-coverage: ## Testes com cobertura e gera HTML
 	@echo -e "$(GREEN)Executando testes com cobertura...$(NC)"
 	@mkdir -p $(COVERAGE_DIR)
-	@cd $(BACKEND_DIR) && go test -coverprofile=coverage/coverage.out ./...
-	@cd $(BACKEND_DIR) && go tool cover -html=coverage/coverage.out -o coverage/coverage.html
-	@echo -e "$(GREEN)Cobertura gerada em $(COVERAGE_DIR)/coverage.html$(NC)"
+	@go test -coverprofile=$(COVERAGE_DIR)/coverage.out ./...
+	@go tool cover -html=$(COVERAGE_DIR)/coverage.out -o $(COVERAGE_DIR)/coverage.html
+	@echo -e "$(GREEN)Cobertura: $(COVERAGE_DIR)/coverage.html$(NC)"
 
-test-integration: ## Executa apenas testes de integração
+test-integration: ## Apenas testes de integração
 	@echo -e "$(GREEN)Executando testes de integração...$(NC)"
-	@cd $(BACKEND_DIR) && go test -v ./internal/tests/integration/...
+	@go test -v ./internal/tests/integration/...
 
-clean: ## Remove arquivos compilados e temporários
-	@echo -e "$(YELLOW)Limpando arquivos...$(NC)"
-	@rm -rf $(BUILD_DIR)
-	@rm -rf $(COVERAGE_DIR)
-	@cd $(BACKEND_DIR) && go clean
+# ---- Limpeza e deps ----
+
+clean: ## Remove binários, cobertura e cache
+	@echo -e "$(YELLOW)Limpando...$(NC)"
+	@rm -rf $(BUILD_DIR) $(COVERAGE_DIR) $(TMP_DIR)
+	@go clean
 	@echo -e "$(GREEN)Limpeza concluída$(NC)"
 
-install: ## Instala dependências
-	@echo -e "$(GREEN)Instalando dependências...$(NC)"
-	@cd $(BACKEND_DIR) && go mod download
+install: ## Baixa dependências Go
+	@echo -e "$(GREEN)Instalando dependências Go...$(NC)"
+	@go mod download
 	@echo -e "$(GREEN)Dependências instaladas$(NC)"
 
-mod-tidy: ## Limpa e atualiza go.mod
-	@echo -e "$(GREEN)Limpando go.mod...$(NC)"
-	@cd $(BACKEND_DIR) && go mod tidy
+mod-tidy: ## go mod tidy
+	@echo -e "$(GREEN)Atualizando go.mod...$(NC)"
+	@go mod tidy
 	@echo -e "$(GREEN)go.mod atualizado$(NC)"
 
-format: ## Formata o código com gofmt
+# ---- Qualidade ----
+
+format: ## gofmt -s -w
 	@echo -e "$(GREEN)Formatando código...$(NC)"
-	@cd $(BACKEND_DIR) && gofmt -s -w .
+	@golangci-lint fmt
 	@echo -e "$(GREEN)Código formatado$(NC)"
 
-vet: ## Verifica o código com go vet
-	@echo -e "$(GREEN)Verificando código com go vet...$(NC)"
-	@cd $(BACKEND_DIR) && go vet ./...
+vet: ## go vet
+	@echo -e "$(GREEN)Verificando código...$(NC)"
+	@go vet ./...
 	@echo -e "$(GREEN)Verificação concluída$(NC)"
 
-lint: vet ## Executa verificações de código (vet)
-	@echo -e "$(GREEN)Verificações de código concluídas$(NC)"
+lint: 
+	@echo -e "$(GREEN)Verificando código...$(NC)"
+	@golangci-lint run --fix
+	@echo -e "$(GREEN)Verificação concluída$(NC)"
 
-check: format vet test ## Formata, verifica e testa o código
-	@echo -e "$(GREEN)Verificações concluídas$(NC)"
+check: format lint test ## Formata, verifica e testa
 
-# Comando para verificar se o Go está instalado
-check-go:
+# ---- Utilitários ----
+
+check-go: ## Verifica se Go está instalado
 	@which go > /dev/null || (echo -e "$(RED)Go não está instalado$(NC)" && exit 1)
 
-# Comando para verificar versão do Go
-version:
-	@echo -e "$(GREEN)Versão do Go:$(NC)"
-	@go version
+version: ## Versão do Go
+	@echo -e "$(GREEN)Go:$(NC)" && go version

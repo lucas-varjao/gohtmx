@@ -8,8 +8,15 @@ package pages
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-// LoginPage renders the login page
-func LoginPage(errorMessage string) templ.Component {
+import (
+	"html/template"
+
+	"github.com/lucas-varjao/gohtmx/templates/components"
+)
+
+// LoginPage renders the login page.
+// errorIcon, iconSubmit, iconUser, iconLock are trusted HTML from lucide-go (e.g. icons.Error(), icons.LogIn(), icons.User(), icons.Lock()).
+func LoginPage(errorMessage string, errorIcon template.HTML, iconSubmit template.HTML, iconUser template.HTML, iconLock template.HTML) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -35,25 +42,44 @@ func LoginPage(errorMessage string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if errorMessage != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"alert alert-error mb-4\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"stroke-current shrink-0 h-6 w-6\" fill=\"none\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg> <span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"mb-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 string
-			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(errorMessage)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/login.templ`, Line: 13, Col: 25}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			templ_7745c5c3_Err = components.ErrorAlert(errorMessage, errorIcon).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</span></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form hx-post=\"/auth/login\" hx-target=\"#login-error\" hx-swap=\"innerHTML\" hx-on::after-request=\"if(event.detail.xhr.status === 200) { window.location.href = '/'; }\" class=\"space-y-4\"><div id=\"login-error\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Usuário ou Email</span></label> <input type=\"text\" name=\"username\" placeholder=\"usuário ou email\" class=\"input input-bordered w-full\" required></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text\">Senha</span></label> <input type=\"password\" name=\"password\" placeholder=\"senha\" class=\"input input-bordered w-full\" required></div><div class=\"form-control mt-6\"><button type=\"submit\" class=\"btn btn-primary w-full\">Entrar</button></div></form><div class=\"divider\">ou</div><div class=\"text-center\"><p class=\"text-sm text-base-content/70\">Não tem uma conta?  <a href=\"/register\" class=\"link link-primary transition-colors duration-200\">Registre-se</a></p></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form hx-post=\"/auth/login\" hx-target=\"#login-error\" hx-swap=\"innerHTML\" hx-on::after-request=\"if(event.detail.xhr.status === 200) { window.location.href = '/'; }\" class=\"space-y-4\"><div id=\"login-error\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text inline-flex items-center gap-1.5\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconUser).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span>Usuário ou Email</span></span></label> <input type=\"text\" name=\"username\" placeholder=\"usuário ou email\" class=\"input input-bordered w-full\" required></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text inline-flex items-center gap-1.5\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconLock).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span>Senha</span></span></label> <input type=\"password\" name=\"password\" placeholder=\"senha\" class=\"input input-bordered w-full\" required></div><div class=\"form-control mt-6\"><button type=\"submit\" class=\"btn btn-primary w-full inline-flex items-center justify-center gap-2\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(iconSubmit).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span>Entrar</span></button></div></form><div class=\"divider\">ou</div><div class=\"text-center\"><p class=\"text-sm text-base-content/70\">Não tem uma conta?  <a href=\"/register\" class=\"link link-primary transition-colors duration-200\">Registre-se</a></p></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

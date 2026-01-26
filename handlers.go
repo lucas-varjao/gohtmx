@@ -11,6 +11,7 @@ import (
 	"github.com/angelofallars/htmx-go"
 
 	"github.com/lucas-varjao/gohtmx/internal/auth"
+	"github.com/lucas-varjao/gohtmx/internal/icons"
 	"github.com/lucas-varjao/gohtmx/internal/middleware"
 	"github.com/lucas-varjao/gohtmx/templates/layouts"
 	"github.com/lucas-varjao/gohtmx/templates/pages"
@@ -58,6 +59,9 @@ func indexViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 		bodyContent,
 		displayName,
 		loggedIn,
+		icons.LogIn(),
+		icons.UserPlus(),
+		icons.LogOut(),
 		AppVersion,
 		time.Now().Year(),
 	)
@@ -109,7 +113,7 @@ func loginViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 
 	displayName, loggedIn := getNavData(c, authManager)
 	metaTags := pages.MetaTags("login, autenticação, entrar", "Faça login na sua conta")
-	bodyContent := layouts.AuthContentWrap(pages.LoginPage(errorMsg))
+	bodyContent := layouts.AuthContentWrap(pages.LoginPage(errorMsg, icons.Error(), icons.LogIn(), icons.User(), icons.Lock()))
 
 	loginTemplate := layouts.Layout(
 		"Entrar - GoHTMX",
@@ -117,6 +121,9 @@ func loginViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 		bodyContent,
 		displayName,
 		loggedIn,
+		icons.LogIn(),
+		icons.UserPlus(),
+		icons.LogOut(),
 		AppVersion,
 		time.Now().Year(),
 	)
@@ -141,7 +148,7 @@ func registerViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 
 	displayName, loggedIn := getNavData(c, authManager)
 	metaTags := pages.MetaTags("registro, criar conta, cadastro", "Crie uma nova conta")
-	bodyContent := layouts.AuthContentWrap(pages.RegisterPage(errorMsg))
+	bodyContent := layouts.AuthContentWrap(pages.RegisterPage(errorMsg, icons.Error(), icons.UserPlus(), icons.User(), icons.Mail(), icons.UserCircle(), icons.Lock(), icons.ValidationSuccess(), icons.ValidationFail()))
 
 	registerTemplate := layouts.Layout(
 		"Criar Conta - GoHTMX",
@@ -149,6 +156,9 @@ func registerViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 		bodyContent,
 		displayName,
 		loggedIn,
+		icons.LogIn(),
+		icons.UserPlus(),
+		icons.LogOut(),
 		AppVersion,
 		time.Now().Year(),
 	)

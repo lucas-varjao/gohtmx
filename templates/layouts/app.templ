@@ -1,13 +1,15 @@
 package layouts
 
 import (
+	"html/template"
+
 	"github.com/lucas-varjao/gohtmx/templates/components"
 	"github.com/lucas-varjao/gohtmx/templates/pages"
 )
 
 // Layout is the single app shell: head, Navbar, body content slot, Footer.
-// All pages (index, login, register) use this layout.
-templ Layout(title string, metaTags, bodyContent templ.Component, navDisplayName string, navLoggedIn bool, footerVersion string, footerYear int) {
+// navIconEntrar, navIconRegistrar, navIconSair are trusted HTML from lucide-go for navbar buttons.
+templ Layout(title string, metaTags, bodyContent templ.Component, navDisplayName string, navLoggedIn bool, navIconEntrar, navIconRegistrar, navIconSair template.HTML, footerVersion string, footerYear int) {
 	<!DOCTYPE html>
 	<html lang="pt-BR" data-theme="smartnavy">
 		<head>
@@ -27,7 +29,7 @@ templ Layout(title string, metaTags, bodyContent templ.Component, navDisplayName
 			<link href="/static/styles.css" rel="stylesheet"/>
 		</head>
 		<body class="min-h-screen flex flex-col bg-base-200" onload={ pages.BodyScripts() }>
-			@components.Navbar(navDisplayName, navLoggedIn)
+			@components.Navbar(navDisplayName, navLoggedIn, navIconEntrar, navIconRegistrar, navIconSair)
 			<main class="flex-1 flex flex-col">
 				@bodyContent
 			</main>

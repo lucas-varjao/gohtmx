@@ -1,16 +1,20 @@
 package pages
 
-// LoginPage renders the login page
-templ LoginPage(errorMessage string) {
+import (
+	"html/template"
+
+	"github.com/lucas-varjao/gohtmx/templates/components"
+)
+
+// LoginPage renders the login page.
+// errorIcon, iconSubmit, iconUser, iconLock are trusted HTML from lucide-go (e.g. icons.Error(), icons.LogIn(), icons.User(), icons.Lock()).
+templ LoginPage(errorMessage string, errorIcon template.HTML, iconSubmit template.HTML, iconUser template.HTML, iconLock template.HTML) {
 	<div class="card bg-base-100 shadow-xl text-base-content">
 		<div class="card-body">
 			<h1 class="card-title text-3xl mb-4 text-base-content justify-center">Entrar</h1>
 			if errorMessage != "" {
-				<div class="alert alert-error mb-4">
-					<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-					</svg>
-					<span>{ errorMessage }</span>
+				<div class="mb-4">
+					@components.ErrorAlert(errorMessage, errorIcon)
 				</div>
 			}
 			<form
@@ -23,7 +27,10 @@ templ LoginPage(errorMessage string) {
 				<div id="login-error"></div>
 				<div class="form-control">
 					<label class="label">
-						<span class="label-text">Usuário ou Email</span>
+						<span class="label-text inline-flex items-center gap-1.5">
+							@templ.Raw(iconUser)
+							<span>Usuário ou Email</span>
+						</span>
 					</label>
 					<input
 						type="text"
@@ -35,7 +42,10 @@ templ LoginPage(errorMessage string) {
 				</div>
 				<div class="form-control">
 					<label class="label">
-						<span class="label-text">Senha</span>
+						<span class="label-text inline-flex items-center gap-1.5">
+							@templ.Raw(iconLock)
+							<span>Senha</span>
+						</span>
 					</label>
 					<input
 						type="password"
@@ -46,8 +56,9 @@ templ LoginPage(errorMessage string) {
 					/>
 				</div>
 				<div class="form-control mt-6">
-					<button type="submit" class="btn btn-primary w-full">
-						Entrar
+					<button type="submit" class="btn btn-primary w-full inline-flex items-center justify-center gap-2">
+						@templ.Raw(iconSubmit)
+						<span>Entrar</span>
 					</button>
 				</div>
 			</form>

@@ -9,6 +9,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/lucas-varjao/gohtmx/internal/auth"
+	"github.com/lucas-varjao/gohtmx/internal/icons"
 	"github.com/lucas-varjao/gohtmx/internal/logger"
 	"github.com/lucas-varjao/gohtmx/internal/middleware"
 	"github.com/lucas-varjao/gohtmx/internal/service"
@@ -77,7 +78,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 		// Check if HTMX request
 		if c.GetHeader("HX-Request") != "" {
-			errorAlert := components.ErrorAlert(err.Error())
+			errorAlert := components.ErrorAlert(err.Error(), icons.Error())
 			renderTemplError(c, http.StatusBadRequest, errorAlert)
 
 			return
@@ -115,7 +116,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 		// Check if HTMX request
 		if c.GetHeader("HX-Request") != "" {
-			errorAlert := components.ErrorAlert(message)
+			errorAlert := components.ErrorAlert(message, icons.Error())
 			renderTemplError(c, status, errorAlert)
 
 			return
@@ -183,7 +184,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		logger.Debug("Requisição de registro com dados inválidos", "error", err, "ip", getClientIP(c))
 
 		if c.GetHeader("HX-Request") != "" {
-			errorAlert := components.ErrorAlert(err.Error())
+			errorAlert := components.ErrorAlert(err.Error(), icons.Error())
 			renderTemplError(c, http.StatusBadRequest, errorAlert)
 			return
 		}
@@ -203,7 +204,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 		// Check if HTMX request
 		if c.GetHeader("HX-Request") != "" {
-			errorAlert := components.ErrorAlert(err.Error())
+			errorAlert := components.ErrorAlert(err.Error(), icons.Error())
 			renderTemplError(c, http.StatusBadRequest, errorAlert)
 			return
 		}
@@ -219,7 +220,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 		// Check if HTMX request
 		if c.GetHeader("HX-Request") != "" {
-			errorAlert := components.ErrorAlert(err.Error())
+			errorAlert := components.ErrorAlert(err.Error(), icons.Error())
 			renderTemplError(c, http.StatusBadRequest, errorAlert)
 			return
 		}

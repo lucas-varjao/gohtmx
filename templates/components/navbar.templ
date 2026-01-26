@@ -1,8 +1,10 @@
 package components
 
+import "html/template"
+
 // Navbar shows brand and auth state (logged-in user or Entrar/Registrar links).
-// Responsive: stacks brand + nav on narrow screens; nav links use transition for hover.
-templ Navbar(displayName string, loggedIn bool) {
+// iconEntrar, iconRegistrar, iconSair are trusted HTML from lucide-go (e.g. icons.LogIn(), icons.UserPlus(), icons.LogOut()).
+templ Navbar(displayName string, loggedIn bool, iconEntrar, iconRegistrar, iconSair template.HTML) {
 	<header class="bg-base-100 shadow-sm border-b border-base-300">
 		<div class="max-w-4xl mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 			<a href="/" class="text-xl font-bold text-base-content hover:opacity-90 transition-opacity duration-200">
@@ -12,11 +14,20 @@ templ Navbar(displayName string, loggedIn bool) {
 				if loggedIn {
 					<span class="text-sm text-base-content/80 py-1 sm:py-0">Olá, <strong class="text-base-content font-medium">{ displayName }</strong></span>
 					<form method="post" action="/logout" class="inline">
-						<button type="submit" class="btn btn-ghost btn-sm w-full sm:w-auto transition-colors duration-200">Sair</button>
+						<button type="submit" class="btn btn-ghost btn-sm w-full sm:w-auto inline-flex items-center justify-center gap-2 transition-colors duration-200">
+							@templ.Raw(iconSair)
+							<span>Sair</span>
+						</button>
 					</form>
 				} else {
-					<a href="/login" class="btn btn-ghost btn-sm text-center transition-colors duration-200">Entrar</a>
-					<a href="/register" class="btn btn-primary btn-sm text-center transition-colors duration-200">Registrar</a>
+					<a href="/login" class="btn btn-ghost btn-sm text-center inline-flex items-center justify-center gap-2 transition-colors duration-200">
+						@templ.Raw(iconEntrar)
+						<span>Entrar</span>
+					</a>
+					<a href="/register" class="btn btn-primary btn-sm text-center inline-flex items-center justify-center gap-2 transition-colors duration-200">
+						@templ.Raw(iconRegistrar)
+						<span>Registrar</span>
+					</a>
 				}
 			</nav>
 		</div>

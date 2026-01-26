@@ -7,6 +7,7 @@ require (
 	github.com/angelofallars/htmx-go v0.5.0
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-gonic/gin v1.11.0
+	github.com/kaugesaar/lucide-go v0.8.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/crypto v0.47.0

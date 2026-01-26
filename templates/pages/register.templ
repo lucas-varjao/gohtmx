@@ -1,16 +1,20 @@
 package pages
 
-// RegisterPage renders the registration page
-templ RegisterPage(errorMessage string) {
+import (
+	"html/template"
+
+	"github.com/lucas-varjao/gohtmx/templates/components"
+)
+
+// RegisterPage renders the registration page.
+// errorIcon, iconSubmit, iconUser, iconMail, iconUserCircle, iconLock, iconValidationSuccess, iconValidationFail are trusted HTML from lucide-go.
+templ RegisterPage(errorMessage string, errorIcon template.HTML, iconSubmit template.HTML, iconUser template.HTML, iconMail template.HTML, iconUserCircle template.HTML, iconLock template.HTML, iconValidationSuccess template.HTML, iconValidationFail template.HTML) {
 	<div class="card bg-base-100 shadow-xl text-base-content">
 		<div class="card-body">
 			<h1 class="card-title text-3xl mb-4 text-base-content justify-center">Criar Conta</h1>
 			if errorMessage != "" {
-				<div class="alert alert-error mb-4">
-					<svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-					</svg>
-					<span>{ errorMessage }</span>
+				<div class="mb-4">
+					@components.ErrorAlert(errorMessage, errorIcon)
 				</div>
 			}
 			<form
@@ -19,12 +23,15 @@ templ RegisterPage(errorMessage string) {
 				hx-swap="innerHTML"
 				hx-on::after-request="if(event.detail.xhr.status === 200) { window.location.href = '/login'; }"
 				class="space-y-4"
-				x-data="{ password: '', confirmPassword: '', passwordsMatch: true }"
+				x-data="{ password: '', confirmPassword: '', passwordsMatch: true, passwordReady: false }"
 			>
 				<div id="register-error"></div>
 				<div class="form-control">
 					<label class="label">
-						<span class="label-text">Nome de Usuário</span>
+						<span class="label-text inline-flex items-center gap-1.5">
+							@templ.Raw(iconUser)
+							<span>Nome de Usuário</span>
+						</span>
 					</label>
 					<input
 						type="text"
@@ -37,7 +44,10 @@ templ RegisterPage(errorMessage string) {
 				</div>
 				<div class="form-control">
 					<label class="label">
-						<span class="label-text">Email</span>
+						<span class="label-text inline-flex items-center gap-1.5">
+							@templ.Raw(iconMail)
+							<span>Email</span>
+						</span>
 					</label>
 					<input
 						type="email"
@@ -49,7 +59,10 @@ templ RegisterPage(errorMessage string) {
 				</div>
 				<div class="form-control">
 					<label class="label">
-						<span class="label-text">Nome de Exibição</span>
+						<span class="label-text inline-flex items-center gap-1.5">
+							@templ.Raw(iconUserCircle)
+							<span>Nome de Exibição</span>
+						</span>
 					</label>
 					<input
 						type="text"
@@ -61,7 +74,10 @@ templ RegisterPage(errorMessage string) {
 				</div>
 				<div class="form-control">
 					<label class="label">
-						<span class="label-text">Senha</span>
+						<span class="label-text inline-flex items-center gap-1.5">
+							@templ.Raw(iconLock)
+							<span>Senha</span>
+						</span>
 					</label>
 					<input
 						type="password"
@@ -71,12 +87,42 @@ templ RegisterPage(errorMessage string) {
 						required
 						minlength="8"
 						x-model="password"
-						@input="passwordsMatch = confirmPassword === '' || password === confirmPassword"
+						@input="passwordsMatch = confirmPassword === '' || password === confirmPassword; passwordReady = password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)"
 					/>
+					<ul class="mt-1 space-y-0.25 text-xs opacity-80 list-none flex flex-col" aria-live="polite">
+						<li class="flex items-center gap-1" :class="password.length >= 8 ? 'text-success' : 'text-error'">
+							<span x-show="password.length >= 8" x-cloak>@templ.Raw(iconValidationSuccess)</span>
+							<span x-show="password.length < 8">@templ.Raw(iconValidationFail)</span>
+							<span>Pelo menos 8 caracteres</span>
+						</li>
+						<li class="flex items-center gap-1" :class="/[A-Z]/.test(password) ? 'text-success' : 'text-error'">
+							<span x-show="/[A-Z]/.test(password)" x-cloak>@templ.Raw(iconValidationSuccess)</span>
+							<span x-show="!/[A-Z]/.test(password)">@templ.Raw(iconValidationFail)</span>
+							<span>Pelo menos uma letra maiúscula</span>
+						</li>
+						<li class="flex items-center gap-1" :class="/[a-z]/.test(password) ? 'text-success' : 'text-error'">
+							<span x-show="/[a-z]/.test(password)" x-cloak>@templ.Raw(iconValidationSuccess)</span>
+							<span x-show="!/[a-z]/.test(password)">@templ.Raw(iconValidationFail)</span>
+							<span>Pelo menos uma letra minúscula</span>
+						</li>
+						<li class="flex items-center gap-1" :class="/[0-9]/.test(password) ? 'text-success' : 'text-error'">
+							<span x-show="/[0-9]/.test(password)" x-cloak>@templ.Raw(iconValidationSuccess)</span>
+							<span x-show="!/[0-9]/.test(password)">@templ.Raw(iconValidationFail)</span>
+							<span>Pelo menos um número</span>
+						</li>
+						<li class="flex items-center gap-1" :class="/[^A-Za-z0-9]/.test(password) ? 'text-success' : 'text-error'">
+							<span x-show="/[^A-Za-z0-9]/.test(password)" x-cloak>@templ.Raw(iconValidationSuccess)</span>
+							<span x-show="!/[^A-Za-z0-9]/.test(password)">@templ.Raw(iconValidationFail)</span>
+							<span>Pelo menos um caractere especial</span>
+						</li>
+					</ul>
 				</div>
 				<div class="form-control">
 					<label class="label">
-						<span class="label-text">Confirmar Senha</span>
+						<span class="label-text inline-flex items-center gap-1.5">
+							@templ.Raw(iconLock)
+							<span>Confirmar Senha</span>
+						</span>
 					</label>
 					<input
 						type="password"
@@ -94,10 +140,11 @@ templ RegisterPage(errorMessage string) {
 				<div class="form-control mt-6">
 					<button
 						type="submit"
-						class="btn btn-primary w-full"
-						:disabled="!passwordsMatch"
+						class="btn btn-primary w-full inline-flex items-center justify-center gap-2"
+						:disabled="!passwordsMatch || !passwordReady"
 					>
-						Criar Conta
+						@templ.Raw(iconSubmit)
+						<span>Criar Conta</span>
 					</button>
 				</div>
 			</form>
