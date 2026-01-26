@@ -75,25 +75,24 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	// Support both JSON and form data (for HTMX forms)
 	if err := c.ShouldBind(&req); err != nil {
 		logger.Debug("Requisição de login com dados inválidos", "error", err, "ip", getClientIP(c))
-
-		// Check if HTMX request
 		if c.GetHeader("HX-Request") != "" {
 			errorAlert := components.ErrorAlert(err.Error(), icons.Error())
-			renderTemplError(c, http.StatusBadRequest, errorAlert)
-
+			renderTemplError(c, http.StatusOK, errorAlert)
 			return
 		}
-
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
 		return
 	}
 
 	// Validate input data before attempting login
 	if err := validation.ValidateLoginRequest(req.Username, req.Password); err != nil {
 		logger.Debug("Requisição de login com validação falhada", "error", err, "username", req.Username, "ip", getClientIP(c))
+		if c.GetHeader("HX-Request") != "" {
+			errorAlert := components.ErrorAlert(err.Error(), icons.Error())
+			renderTemplError(c, http.StatusOK, errorAlert)
+			return
+		}
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
 		return
 	}
 
@@ -114,16 +113,14 @@ func (h *AuthHandler) Login(c *gin.Context) {
 			message = err.Error()
 		}
 
-		// Check if HTMX request
+		// HTMX: return 200 so the error fragment is swapped into #login-error (HTMX ignores body on 4xx/5xx)
 		if c.GetHeader("HX-Request") != "" {
 			errorAlert := components.ErrorAlert(message, icons.Error())
-			renderTemplError(c, status, errorAlert)
-
+			renderTemplError(c, http.StatusOK, errorAlert)
 			return
 		}
 
 		c.JSON(status, gin.H{"error": message})
-
 		return
 	}
 
@@ -186,13 +183,11 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	// Support both JSON and form data (for HTMX forms)
 	if err := c.ShouldBind(&req); err != nil {
 		logger.Debug("Requisição de registro com dados inválidos", "error", err, "ip", getClientIP(c))
-
 		if c.GetHeader("HX-Request") != "" {
 			errorAlert := components.ErrorAlert(err.Error(), icons.Error())
-			renderTemplError(c, http.StatusBadRequest, errorAlert)
+			renderTemplError(c, http.StatusOK, errorAlert)
 			return
 		}
-
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -205,14 +200,11 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		req.DisplayName,
 	); err != nil {
 		logger.Debug("Requisição de registro com validação falhada", "error", err, "username", req.Username, "email", req.Email, "ip", getClientIP(c))
-
-		// Check if HTMX request
 		if c.GetHeader("HX-Request") != "" {
 			errorAlert := components.ErrorAlert(err.Error(), icons.Error())
-			renderTemplError(c, http.StatusBadRequest, errorAlert)
+			renderTemplError(c, http.StatusOK, errorAlert)
 			return
 		}
-
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -221,14 +213,11 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	user, err := h.authService.Register(req.Username, req.Email, req.Password, req.DisplayName)
 	if err != nil {
 		logger.Debug("Erro ao registrar usuário", "error", err, "username", req.Username, "email", req.Email, "ip", getClientIP(c))
-
-		// Check if HTMX request
 		if c.GetHeader("HX-Request") != "" {
 			errorAlert := components.ErrorAlert(err.Error(), icons.Error())
-			renderTemplError(c, http.StatusBadRequest, errorAlert)
+			renderTemplError(c, http.StatusOK, errorAlert)
 			return
 		}
-
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

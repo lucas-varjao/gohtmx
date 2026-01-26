@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import "html/template"
 
 // UserRow renders a single table row for the users list (used for full page and HTMX row swap).
-func UserRow(u UserView, iconActive, iconDelete template.HTML) templ.Component {
+func UserRow(u UserView, iconActive, iconInactive, iconDelete template.HTML) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -181,17 +181,21 @@ func UserRow(u UserView, iconActive, iconDelete template.HTML) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.Raw(iconActive).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
 		if u.Active {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"text-success\">Ativo</span>")
+			templ_7745c5c3_Err = templ.Raw(iconActive).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " <span class=\"text-success\">Ativo</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<span class=\"text-error\">Inativo</span>")
+			templ_7745c5c3_Err = templ.Raw(iconInactive).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " <span class=\"text-error\">Inativo</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -203,7 +207,7 @@ func UserRow(u UserView, iconActive, iconDelete template.HTML) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(u.LastLogin)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/users.templ`, Line: 51, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/users.templ`, Line: 52, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -216,7 +220,7 @@ func UserRow(u UserView, iconActive, iconDelete template.HTML) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(u.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/users.templ`, Line: 58, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/users.templ`, Line: 59, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -229,7 +233,7 @@ func UserRow(u UserView, iconActive, iconDelete template.HTML) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(u.Username)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/users.templ`, Line: 59, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin/users.templ`, Line: 60, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -254,7 +258,7 @@ func UserRow(u UserView, iconActive, iconDelete template.HTML) templ.Component {
 // UsersPage renders the admin users list with table and actions.
 // Modais de exclusão e de novo usuário usam Alpine (x-data, @click delegado / $refs).
 // iconActive, iconDelete e iconError são trusted HTML from lucide-go (iconError para erros do form novo usuário).
-func UsersPage(users []UserView, iconActive, iconDelete, iconError template.HTML) templ.Component {
+func UsersPage(users []UserView, iconActive, iconInactive, iconDelete, iconError template.HTML) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -280,7 +284,7 @@ func UsersPage(users []UserView, iconActive, iconDelete, iconError template.HTML
 			return templ_7745c5c3_Err
 		}
 		for _, u := range users {
-			templ_7745c5c3_Err = UserRow(u, iconActive, iconDelete).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = UserRow(u, iconActive, iconInactive, iconDelete).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

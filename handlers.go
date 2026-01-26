@@ -257,7 +257,7 @@ func adminUsersView(c *gin.Context, db *gorm.DB) {
 		})
 	}
 	metaTags := pages.MetaTags("admin, usuários, gestão", "Gerencie usuários do sistema.")
-	content := admin.UsersPage(views, icons.CircleCheckForStatus(), icons.Trash2(), icons.Error())
+	content := admin.UsersPage(views, icons.CircleCheckForStatus(), icons.ValidationFail(), icons.Trash2(), icons.Error())
 	tmpl := layouts.DashboardLayout(
 		"Usuários - Admin - GoHTMX",
 		metaTags,
@@ -311,7 +311,7 @@ func adminUserRolePost(c *gin.Context, db *gorm.DB) {
 		return
 	}
 	view := userViewFromModel(&u)
-	row := admin.UserRow(view, icons.CircleCheckForStatus(), icons.Trash2())
+	row := admin.UserRow(view, icons.CircleCheckForStatus(), icons.ValidationFail(), icons.Trash2())
 	c.Header("Content-Type", "text/html; charset=utf-8")
 	_ = row.Render(context.Background(), c.Writer)
 }
@@ -332,7 +332,7 @@ func adminUserActivePost(c *gin.Context, db *gorm.DB) {
 		return
 	}
 	view := userViewFromModel(&u)
-	row := admin.UserRow(view, icons.CircleCheckForStatus(), icons.Trash2())
+	row := admin.UserRow(view, icons.CircleCheckForStatus(), icons.ValidationFail(), icons.Trash2())
 	c.Header("Content-Type", "text/html; charset=utf-8")
 	_ = row.Render(context.Background(), c.Writer)
 }

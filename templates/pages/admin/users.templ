@@ -3,7 +3,7 @@ package admin
 import "html/template"
 
 // UserRow renders a single table row for the users list (used for full page and HTMX row swap).
-templ UserRow(u UserView, iconActive, iconDelete template.HTML) {
+templ UserRow(u UserView, iconActive, iconInactive, iconDelete template.HTML) {
 	<tr id={ "user-row-" + u.ID }>
 		<td>{ u.Username }</td>
 		<td>{ u.Email }</td>
@@ -39,10 +39,11 @@ templ UserRow(u UserView, iconActive, iconDelete template.HTML) {
 			>
 				<input type="hidden" name="active" value={ BoolToHidden(u.Active) }/>
 				<button type="submit" class="btn btn-ghost btn-xs gap-1" title={ BoolToTitle(u.Active) }>
-					@templ.Raw(iconActive)
 					if u.Active {
+						@templ.Raw(iconActive)
 						<span class="text-success">Ativo</span>
 					} else {
+						@templ.Raw(iconInactive)
 						<span class="text-error">Inativo</span>
 					}
 				</button>
@@ -68,7 +69,7 @@ templ UserRow(u UserView, iconActive, iconDelete template.HTML) {
 // UsersPage renders the admin users list with table and actions.
 // Modais de exclusão e de novo usuário usam Alpine (x-data, @click delegado / $refs).
 // iconActive, iconDelete e iconError são trusted HTML from lucide-go (iconError para erros do form novo usuário).
-templ UsersPage(users []UserView, iconActive, iconDelete, iconError template.HTML) {
+templ UsersPage(users []UserView, iconActive, iconInactive, iconDelete, iconError template.HTML) {
 	<div
 		class="p-6"
 		id="admin-users-page"
@@ -104,7 +105,7 @@ templ UsersPage(users []UserView, iconActive, iconDelete, iconError template.HTM
 					</thead>
 					<tbody>
 						for _, u := range users {
-							@UserRow(u, iconActive, iconDelete)
+							@UserRow(u, iconActive, iconInactive, iconDelete)
 						}
 					</tbody>
 				</table>
