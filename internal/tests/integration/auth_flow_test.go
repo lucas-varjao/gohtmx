@@ -45,7 +45,7 @@ func setupIntegrationTest(t *testing.T) (*gin.Engine, *gorm.DB, *auth.AuthManage
 	authHandler := handlers.NewAuthHandler(authService)
 
 	// Setup router
-	r := router.SetupRouter(authHandler, authManager)
+	r := router.SetupRouter(authHandler, authManager, nil)
 	return r, db, authManager
 }
 

@@ -1,10 +1,7 @@
-package templates
+package layouts
 
-import "github.com/lucas-varjao/gohtmx/templates/pages"
-
-// Layout is the single app shell: head, Navbar, body content slot, Footer.
-// All pages (index, login, register) use this layout.
-templ Layout(title string, metaTags, bodyContent templ.Component, navDisplayName string, navLoggedIn bool, footerVersion string, footerYear int) {
+// ErrorLayout is the minimal shell for HTTP error pages (4xx/5xx). No navbar/footer.
+templ ErrorLayout(title string, metaTags, bodyContent templ.Component) {
 	<!DOCTYPE html>
 	<html lang="pt-BR" data-theme="smartnavy">
 		<head>
@@ -17,18 +14,14 @@ templ Layout(title string, metaTags, bodyContent templ.Component, navDisplayName
 			<title>{ title }</title>
 			@metaTags
 			<link rel="manifest" href="/static/manifest.webmanifest"/>
-			<link rel="apple-touch-icon" href="/static/apple-touch-icon.png"/>
 			<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon"/>
 			<link rel="icon" href="/static/favicon.svg" type="image/svg+xml"/>
-			<link rel="icon" href="/static/favicon.png" sizes="any"/>
 			<link href="/static/styles.css" rel="stylesheet"/>
 		</head>
-		<body class="min-h-screen flex flex-col bg-base-200" onload={ pages.BodyScripts() }>
-			@pages.Navbar(navDisplayName, navLoggedIn)
-			<main class="flex-1 flex flex-col">
+		<body class="min-h-screen bg-base-200 flex items-center justify-center p-4">
+			<div class="w-full max-w-lg text-center">
 				@bodyContent
-			</main>
-			@pages.Footer(footerVersion, footerYear, "GoHTMX")
+			</div>
 			<script src="/static/scripts.js"></script>
 		</body>
 	</html>

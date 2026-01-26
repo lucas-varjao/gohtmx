@@ -1,15 +1,18 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/a-h/templ"
 	"github.com/angelofallars/htmx-go"
 
 	"github.com/lucas-varjao/gohtmx/internal/auth"
 	"github.com/lucas-varjao/gohtmx/internal/middleware"
-	"github.com/lucas-varjao/gohtmx/templates"
+	"github.com/lucas-varjao/gohtmx/templates/layouts"
 	"github.com/lucas-varjao/gohtmx/templates/pages"
 
 	"github.com/gin-gonic/gin"
@@ -49,7 +52,7 @@ func indexViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 
 	bodyContent := pages.IndexPage(generatedAt)
 
-	indexTemplate := templates.Layout(
+	indexTemplate := layouts.Layout(
 		"GoHTMX — Stack demo",
 		metaTags,
 		bodyContent,
@@ -106,9 +109,9 @@ func loginViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 
 	displayName, loggedIn := getNavData(c, authManager)
 	metaTags := pages.MetaTags("login, autenticação, entrar", "Faça login na sua conta")
-	bodyContent := pages.AuthContentWrap(pages.LoginPage(errorMsg))
+	bodyContent := layouts.AuthContentWrap(pages.LoginPage(errorMsg))
 
-	loginTemplate := templates.Layout(
+	loginTemplate := layouts.Layout(
 		"Entrar - GoHTMX",
 		metaTags,
 		bodyContent,
@@ -138,9 +141,9 @@ func registerViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 
 	displayName, loggedIn := getNavData(c, authManager)
 	metaTags := pages.MetaTags("registro, criar conta, cadastro", "Crie uma nova conta")
-	bodyContent := pages.AuthContentWrap(pages.RegisterPage(errorMsg))
+	bodyContent := layouts.AuthContentWrap(pages.RegisterPage(errorMsg))
 
-	registerTemplate := templates.Layout(
+	registerTemplate := layouts.Layout(
 		"Criar Conta - GoHTMX",
 		metaTags,
 		bodyContent,
@@ -153,5 +156,56 @@ func registerViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 	if err := htmx.NewResponse().RenderTempl(c.Request.Context(), c.Writer, registerTemplate); err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
+	}
+}
+
+// wantsHTML returns true when the request prefers an HTML response (browser navigation).
+func wantsHTML(c *gin.Context) bool {
+	accept := c.GetHeader("Accept")
+	if accept == "" {
+		return true
+	}
+	return strings.Contains(accept, "text/html")
+}
+
+// renderErrorPage writes an HTTP error page (404, 403, 500, 503) using the error layout and template.
+func renderErrorPage(c *gin.Context, code int) {
+	var title string
+	var metaKeywords, metaDesc string
+	var content templ.Component
+	switch code {
+	case http.StatusNotFound:
+		title = "Página não encontrada - GoHTMX"
+		metaKeywords = "erro 404, não encontrado"
+		metaDesc = "Página não encontrada."
+		content = pages.Error404Content()
+	case http.StatusForbidden:
+		title = "Acesso negado - GoHTMX"
+		metaKeywords = "erro 403, acesso negado"
+		metaDesc = "Acesso negado."
+		content = pages.Error403Content()
+	case http.StatusInternalServerError:
+		title = "Erro interno - GoHTMX"
+		metaKeywords = "erro 500, erro interno"
+		metaDesc = "Erro interno do servidor."
+		content = pages.Error500Content()
+	case http.StatusServiceUnavailable:
+		title = "Em manutenção - GoHTMX"
+		metaKeywords = "erro 503, manutenção"
+		metaDesc = "Serviço temporariamente indisponível."
+		content = pages.Error503Content()
+	default:
+		code = http.StatusInternalServerError
+		title = "Erro - GoHTMX"
+		metaKeywords = "erro"
+		metaDesc = "Ocorreu um erro."
+		content = pages.Error500Content()
+	}
+	metaTags := pages.MetaTags(metaKeywords, metaDesc)
+	tmpl := layouts.ErrorLayout(title, metaTags, content)
+	c.Status(code)
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	if err := tmpl.Render(context.Background(), c.Writer); err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 }

@@ -87,7 +87,7 @@ func TestSetupRouter(t *testing.T) {
 	// Setup
 	mockAuthHandler := NewMockAuthHandler()
 	mockAuthManager := NewMockAuthManager()
-	router := SetupRouter(mockAuthHandler, mockAuthManager)
+	router := SetupRouter(mockAuthHandler, mockAuthManager, nil)
 
 	// Test cases: only routes that exist in SetupRouter (no GET / in current router)
 	tests := []struct {
@@ -147,7 +147,7 @@ func TestRateLimiting(t *testing.T) {
 	// Setup
 	mockAuthHandler := NewMockAuthHandler()
 	mockAuthManager := NewMockAuthManager()
-	router := SetupRouter(mockAuthHandler, mockAuthManager)
+	router := SetupRouter(mockAuthHandler, mockAuthManager, nil)
 
 	// Test auth routes rate limiting
 	t.Run("Auth routes rate limiting", func(t *testing.T) {
@@ -179,7 +179,7 @@ func TestProtectedRoutes(t *testing.T) {
 	// Setup
 	mockAuthHandler := NewMockAuthHandler()
 	mockAuthManager := NewMockAuthManager()
-	router := SetupRouter(mockAuthHandler, mockAuthManager)
+	router := SetupRouter(mockAuthHandler, mockAuthManager, nil)
 
 	tests := []struct {
 		name           string

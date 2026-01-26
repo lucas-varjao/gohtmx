@@ -13,12 +13,20 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// SetupRouter configures all routes for the application
+// SetupRouter configures all routes for the application.
+// If recoveryFn is non-nil, it is used as custom recovery (e.g. to render HTML error pages for 500).
 func SetupRouter(
 	authHandler *handlers.AuthHandler,
 	authManager *auth.AuthManager,
+	recoveryFn gin.RecoveryFunc,
 ) *gin.Engine {
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Logger())
+	if recoveryFn != nil {
+		r.Use(gin.CustomRecovery(recoveryFn))
+	} else {
+		r.Use(gin.Recovery())
+	}
 
 	// Add CORS middleware
 	r.Use(middleware.CorsMiddleware())

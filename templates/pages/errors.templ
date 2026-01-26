@@ -1,0 +1,45 @@
+package pages
+
+// ErrorPage renders the inner content for an HTTP error: code, title, description, and back link.
+// accentClass: use text-accent (404), text-warning (403), text-error (500), text-info (503).
+// Uses .error-fade-in from global CSS for staggered entrance animation.
+templ ErrorPage(code int, title, description, backHref, backLabel string, accentClass string) {
+	<div class="flex flex-col items-center gap-6">
+		<div class={ "error-fade-in text-7xl md:text-8xl font-bold tabular-nums " + accentClass } style="animation-delay: 0s">
+			{ code }
+		</div>
+		<h1 class="error-fade-in text-2xl font-semibold text-base-content" style="animation-delay: 0.1s">
+			{ title }
+		</h1>
+		<p class="error-fade-in text-base-content/80 text-center max-w-sm" style="animation-delay: 0.2s">
+			{ description }
+		</p>
+		<a
+			href={ backHref }
+			class="error-fade-in btn btn-primary mt-2"
+			style="animation-delay: 0.3s"
+		>
+			{ backLabel }
+		</a>
+	</div>
+}
+
+// Error404Content returns the content for 404 Not Found.
+templ Error404Content() {
+	@ErrorPage(404, "Página não encontrada", "O endereço que você acessou não existe ou foi movido.", "/", "Voltar ao início", "text-accent")
+}
+
+// Error403Content returns the content for 403 Forbidden.
+templ Error403Content() {
+	@ErrorPage(403, "Acesso negado", "Você não tem permissão para acessar este recurso.", "/", "Voltar ao início", "text-warning")
+}
+
+// Error500Content returns the content for 500 Internal Server Error.
+templ Error500Content() {
+	@ErrorPage(500, "Algo deu errado", "Ocorreu um erro interno. Tente novamente em alguns instantes.", "/", "Voltar ao início", "text-error")
+}
+
+// Error503Content returns the content for 503 Service Unavailable.
+templ Error503Content() {
+	@ErrorPage(503, "Voltamos em breve", "O serviço está em manutenção. Por favor, tente de novo mais tarde.", "/", "Voltar ao início", "text-info")
+}

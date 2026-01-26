@@ -56,8 +56,18 @@ func runServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager)
 		return fmt.Errorf("config not loaded")
 	}
 
+	// Custom recovery: render HTML error page or JSON depending on Accept header
+	recoveryFn := func(c *gin.Context, err any) {
+		logger.Error("panic recovered", "error", err)
+		if wantsHTML(c) {
+			renderErrorPage(c, http.StatusInternalServerError)
+		} else {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		}
+	}
+
 	// Setup router with all routes (auth, API, etc.)
-	r := router.SetupRouter(authHandler, authManager)
+	r := router.SetupRouter(authHandler, authManager, recoveryFn)
 
 	// Define HTML renderer for template engine (TEMPL support)
 	r.HTMLRender = &TemplRender{}
@@ -77,6 +87,24 @@ func runServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager)
 
 	// Handle API endpoints (keep gowebly example route)
 	r.GET("/api/hello-world", showContentAPIHandler)
+
+	// 503 maintenance page (for testing and future maintenance mode)
+	r.GET("/maintenance", func(c *gin.Context) {
+		if wantsHTML(c) {
+			renderErrorPage(c, http.StatusServiceUnavailable)
+		} else {
+			c.AbortWithStatusJSON(http.StatusServiceUnavailable, gin.H{"error": "service unavailable"})
+		}
+	})
+
+	// 404 for unmatched routes (after all other routes)
+	r.NoRoute(func(c *gin.Context) {
+		if wantsHTML(c) {
+			renderErrorPage(c, http.StatusNotFound)
+		} else {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "not found"})
+		}
+	})
 
 	// Get port from config
 	port := cfg.Server.Port

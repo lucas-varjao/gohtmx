@@ -1,0 +1,41 @@
+package layouts
+
+// AuthContentWrap wraps login/register card in a centered container for use inside the app Layout.
+templ AuthContentWrap(content templ.Component) {
+	<div class="flex-1 flex items-center justify-center p-4">
+		<div class="w-full max-w-md">
+			@content
+		</div>
+	</div>
+}
+
+// AuthLayout defines a minimal layout for authentication pages (login, register).
+// Prefer using the app Layout + AuthContentWrap so navbar/footer are shown.
+templ AuthLayout(title string, metaTags, bodyContent templ.Component) {
+	<!DOCTYPE html>
+	<html lang="pt-BR" data-theme="smartnavy">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+			<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws://localhost:*; img-src 'self' data:;"/>
+			<meta name="theme-color" content="#070F26"/>
+			<meta name="color-scheme" content="dark"/>
+			<title>{ title }</title>
+			@metaTags
+			<link rel="manifest" href="/static/manifest.webmanifest"/>
+			<link rel="apple-touch-icon" href="/static/apple-touch-icon.png"/>
+			<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon"/>
+			<link rel="icon" href="/static/favicon.svg" type="image/svg+xml"/>
+			<link rel="icon" href="/static/favicon.png" sizes="any"/>
+			<link href="/static/styles.css" rel="stylesheet"/>
+		</head>
+		<body class="min-h-screen bg-base-200 flex items-center justify-center p-4">
+			<div class="w-full max-w-md">
+				@bodyContent
+			</div>
+			<!-- Single script bundle (htmx + Alpine), same as main Layout -->
+			<script src="/static/scripts.js"></script>
+		</body>
+	</html>
+}
