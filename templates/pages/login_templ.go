@@ -55,7 +55,7 @@ func LoginPage(errorMessage string, errorIcon template.HTML, iconSubmit template
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form hx-post=\"/auth/login\" hx-target=\"#login-error\" hx-swap=\"innerHTML\" hx-on::after-request=\"if(event.detail.xhr.status === 200) { window.location.href = '/'; }\" class=\"space-y-4\"><div id=\"login-error\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text inline-flex items-center gap-1.5\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form hx-post=\"/auth/login\" hx-target=\"#login-error\" hx-swap=\"innerHTML\" class=\"space-y-4\"><div id=\"login-error\"></div><div class=\"form-control\"><label class=\"label\"><span class=\"label-text inline-flex items-center gap-1.5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

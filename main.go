@@ -90,7 +90,7 @@ func main() {
 	authHandler := handlers.NewAuthHandler(authService)
 
 	// Run server with all infrastructure
-	if err := runServer(authHandler, authManager); err != nil {
+	if err := runServer(authHandler, authManager, db); err != nil {
 		logger.Error("Erro ao iniciar servidor", "error", err)
 		os.Exit(1)
 	}

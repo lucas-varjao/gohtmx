@@ -13,7 +13,10 @@ import (
 	"github.com/lucas-varjao/gohtmx/internal/config"
 	"github.com/lucas-varjao/gohtmx/internal/handlers"
 	"github.com/lucas-varjao/gohtmx/internal/logger"
+	"github.com/lucas-varjao/gohtmx/internal/middleware"
 	"github.com/lucas-varjao/gohtmx/internal/router"
+
+	"gorm.io/gorm"
 )
 
 // TemplRender implements the render.Render interface.
@@ -50,7 +53,7 @@ func (t *TemplRender) Instance(name string, data any) render.Render {
 }
 
 // runServer runs a new HTTP server with the loaded environment variables.
-func runServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager) error {
+func runServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager, db *gorm.DB) error {
 	cfg := config.GetConfig()
 	if cfg == nil {
 		return fmt.Errorf("config not loaded")
@@ -87,6 +90,18 @@ func runServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager)
 
 	// Handle API endpoints (keep gowebly example route)
 	r.GET("/api/hello-world", showContentAPIHandler)
+
+	// Admin area (HTML); requires valid session + admin role
+	adminGroup := r.Group("/admin")
+	adminGroup.Use(middleware.AdminWebMiddleware(authManager, func(c *gin.Context) { renderErrorPage(c, http.StatusForbidden) }))
+	adminGroup.GET("", adminDashboardView)
+	adminGroup.GET("/", adminDashboardView)
+	adminGroup.GET("/users", func(c *gin.Context) { adminUsersView(c, db) })
+	adminGroup.GET("/users/new", adminUsersNewView)
+	adminGroup.POST("/users", func(c *gin.Context) { adminUsersCreatePost(c, db) })
+	adminGroup.POST("/users/:id/role", func(c *gin.Context) { adminUserRolePost(c, db) })
+	adminGroup.POST("/users/:id/active", func(c *gin.Context) { adminUserActivePost(c, db) })
+	adminGroup.POST("/users/:id/delete", func(c *gin.Context) { adminUserDeletePost(c, db, authManager) })
 
 	// 503 maintenance page (for testing and future maintenance mode)
 	r.GET("/maintenance", func(c *gin.Context) {

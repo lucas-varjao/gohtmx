@@ -72,3 +72,23 @@ func ValidationSuccess() template.HTML {
 func ValidationFail() template.HTML {
 	return lucide.CircleX(lucide.Options{Color: colorCurrent, Class: "w-2 h-2 shrink-0"})
 }
+
+// LayoutDashboard returns the layout-dashboard icon for admin sidebar “Dashboard”.
+func LayoutDashboard() template.HTML {
+	return lucide.LayoutDashboard(lucide.Options{Color: colorCurrent, Class: classButton})
+}
+
+// Users returns the users icon for admin sidebar “Usuários” (list of users).
+func Users() template.HTML {
+	return lucide.Users(lucide.Options{Color: colorCurrent, Class: classButton})
+}
+
+// Trash2 returns the trash icon for delete actions.
+func Trash2() template.HTML {
+	return lucide.Trash2(lucide.Options{Color: colorCurrent, Class: classButton})
+}
+
+// CircleCheckForStatus returns CircleCheck at button size for admin “active” toggle column.
+func CircleCheckForStatus() template.HTML {
+	return lucide.CircleCheck(lucide.Options{Color: colorCurrent, Class: classButton})
+}

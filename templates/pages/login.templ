@@ -21,7 +21,6 @@ templ LoginPage(errorMessage string, errorIcon template.HTML, iconSubmit templat
 				hx-post="/auth/login"
 				hx-target="#login-error"
 				hx-swap="innerHTML"
-				hx-on::after-request="if(event.detail.xhr.status === 200) { window.location.href = '/'; }"
 				class="space-y-4"
 			>
 				<div id="login-error"></div>

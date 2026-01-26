@@ -139,9 +139,13 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		true, // httpOnly
 	)
 
-	// Check if HTMX request - redirect to home
+	// Check if HTMX request - redirect by role (admin → dashboard, others → home)
 	if c.GetHeader("HX-Request") != "" {
-		c.Header("HX-Redirect", "/")
+		redirectTo := "/"
+		if response.User.Role == "admin" {
+			redirectTo = "/admin"
+		}
+		c.Header("HX-Redirect", redirectTo)
 		c.Status(http.StatusOK)
 		return
 	}
