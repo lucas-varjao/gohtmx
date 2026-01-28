@@ -111,9 +111,17 @@ func showContentAPIHandler(c *gin.Context) {
 
 // loginViewHandler handles a view for the login page.
 func loginViewHandler(c *gin.Context, authManager *auth.AuthManager) {
-	if sessionID := middleware.ExtractSessionID(c); sessionID != "" {
-		c.Redirect(http.StatusFound, "/")
-		return
+	sessionID := middleware.ExtractSessionID(c)
+	if sessionID != "" {
+		// Validate session - if invalid, clear cookie and allow access
+		_, _, err := authManager.ValidateSession(sessionID)
+		if err == nil {
+			// Valid session - redirect to home
+			c.Redirect(http.StatusFound, "/")
+			return
+		}
+		// Invalid session - clear cookie and continue to show login page
+		middleware.ClearSessionCookie(c)
 	}
 
 	errorMsg := c.Query("error")
@@ -148,9 +156,17 @@ func loginViewHandler(c *gin.Context, authManager *auth.AuthManager) {
 
 // registerViewHandler handles a view for the registration page.
 func registerViewHandler(c *gin.Context, authManager *auth.AuthManager) {
-	if sessionID := middleware.ExtractSessionID(c); sessionID != "" {
-		c.Redirect(http.StatusFound, "/")
-		return
+	sessionID := middleware.ExtractSessionID(c)
+	if sessionID != "" {
+		// Validate session - if invalid, clear cookie and allow access
+		_, _, err := authManager.ValidateSession(sessionID)
+		if err == nil {
+			// Valid session - redirect to home
+			c.Redirect(http.StatusFound, "/")
+			return
+		}
+		// Invalid session - clear cookie and continue to show register page
+		middleware.ClearSessionCookie(c)
 	}
 
 	errorMsg := c.Query("error")

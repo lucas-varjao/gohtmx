@@ -16,6 +16,7 @@ import (
 var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 	ErrUserNotActive      = errors.New("user not active")
+	ErrUserNotFound       = errors.New("user not found")
 	ErrSessionNotFound    = errors.New("session not found")
 	ErrSessionExpired     = errors.New("session expired")
 )

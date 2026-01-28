@@ -3,6 +3,7 @@ package auth
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"sync"
 	"time"
 
@@ -114,6 +115,12 @@ func (m *AuthManager) ValidateSession(sessionID string) (*Session, *UserData, er
 	// Get user data
 	user, err := m.userAdapter.FindUserByID(session.UserID)
 	if err != nil {
+		// If user not found (e.g., deleted), treat as invalid session and clean up
+		if errors.Is(err, ErrUserNotFound) {
+			logger.Warn("Usuário não encontrado durante validação de sessão - limpando sessão", "session_id", sessionID, "user_id", session.UserID)
+			_ = m.sessionAdapter.DeleteSession(sessionID)
+			return nil, nil, ErrSessionNotFound
+		}
 		logger.Error("Erro ao buscar usuário durante validação de sessão", "error", err, "session_id", sessionID, "user_id", session.UserID)
 
 		return nil, nil, err

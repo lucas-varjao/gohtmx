@@ -39,6 +39,9 @@ func AuthMiddleware(authManager *auth.AuthManager) gin.HandlerFunc {
 
 		session, user, err := authManager.ValidateSession(sessionID)
 		if err != nil {
+			// Clear invalid session cookie (for web requests)
+			ClearSessionCookie(c)
+
 			status := http.StatusUnauthorized
 			var message string
 			switch {

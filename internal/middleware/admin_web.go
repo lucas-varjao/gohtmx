@@ -22,6 +22,8 @@ func AdminWebMiddleware(authManager *auth.AuthManager, onForbidden func(*gin.Con
 
 		_, user, err := authManager.ValidateSession(sessionID)
 		if err != nil || user == nil {
+			// Clear invalid session cookie
+			ClearSessionCookie(c)
 			c.Redirect(302, "/login")
 			c.Abort()
 			return

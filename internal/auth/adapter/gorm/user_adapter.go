@@ -49,7 +49,7 @@ func (a *UserAdapter) FindUserByID(id string) (*auth.UserData, error) {
 	var user models.User
 	if err := a.db.First(&user, userID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, auth.ErrInvalidCredentials
+			return nil, auth.ErrUserNotFound
 		}
 		logger.Error("Erro ao buscar usuário por ID", "error", err, "user_id", id)
 		return nil, err
