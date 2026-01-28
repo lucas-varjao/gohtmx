@@ -1,8 +1,5 @@
-# Auto-generated docker-compose.yml file.
-# See https://gowebly.org for more information.
-
-version: '3.8'
-
+# docker-compose.yml for GoHTMX
+# Hot reload: assets (bun) + templates (templ) + Go server
 services:
   postgres:
     image: postgres:16-alpine
@@ -16,14 +13,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - gowebly_gin_network
+      - gohtmx_network
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U gohtmx -d gohtmx']
       interval: 5s
       timeout: 5s
       retries: 5
 
-  gowebly_gin:
+  gohtmx:
     build:
       context: .
       dockerfile: Dockerfile
@@ -37,10 +34,10 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - gowebly_gin_network
+      - gohtmx_network
 
 networks:
-  gowebly_gin_network:
+  gohtmx_network:
 
 volumes:
   postgres_data:
