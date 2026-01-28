@@ -5,7 +5,7 @@ alwaysApply: true
 
 ## Project Overview
 
-GoHTMX is a template/base project designed as an alternative to heavy JavaScript frameworks like React. It uses server-side rendering with Golang + TEMPL templates, enhanced with HTMX for dynamic interactions, Tailwind CSS + DaisyUI for styling, and Alpine.js for basic reactivity. The template comes with a complete session-based authentication system, login/register pages, and an example page showcasing the full stack.
+GoHTMX is a template/base project designed as an alternative to heavy JavaScript frameworks like React. It uses server-side rendering with Golang + TEMPL templates, enhanced with HTMX for dynamic interactions, Tailwind CSS v4 + DaisyUI for styling, and Alpine.js for basic reactivity. The template comes with a complete session-based authentication system, login/register pages, and an example page showcasing the full stack.
 
 ## Backend Specifications
 
@@ -14,8 +14,9 @@ GoHTMX is a template/base project designed as an alternative to heavy JavaScript
 - **Authentication**: Session-based (pluggable adapters inspired by Lucia Auth)
 - **Database**: PostgreSQL (via GORM)
 - **ORM**: GORM for database operations
-- **Logging**: Zap
+- **Logging**: Slog
 - **Config**: Viper
+- **Entrypoints**: `main.go` and `server.go` in repo root
 
 ### Authentication Architecture
 
@@ -34,7 +35,8 @@ internal/auth/
 
 ### Template Structure
 
-Templates are organized in `internal/templates/`:
+Templates are organized in `templates/`:
+
 - Use TEMPL syntax for server-side rendering
 - Templates are compiled at build time for performance
 - Support for partials and layouts
@@ -43,19 +45,20 @@ Templates are organized in `internal/templates/`:
 
 - **Template Engine**: TEMPL (server-side rendering)
 - **Dynamic Interactions**: HTMX
-- **Styling**: Tailwind CSS (utility-first)
+- **Styling**: Tailwind CSS v4 (CSS-first)
 - **UI Components**: DaisyUI
 - **Reactivity**: Alpine.js (for basic client-side state)
-- **No Build Step**: Templates are rendered server-side
+- **Assets**: `assets/` source, built to `static/` via Bun/Parcel
 
 ### Frontend Stack Philosophy
 
 This template provides an alternative to heavy JavaScript frameworks:
+
 - **Server-side rendering** with TEMPL for fast initial page loads
 - **HTMX** for dynamic content updates without full page reloads
 - **Alpine.js** for minimal client-side interactivity (forms, toggles, etc.)
 - **Tailwind CSS + DaisyUI** for rapid UI development
-- **No complex build pipeline** - just Go templates
+- **Simple build**: Go build + optional asset build
 
 ### User Model
 
@@ -88,23 +91,30 @@ type User struct {
 
 ## Development Workflow
 
-- Single server: `go run cmd/server/server.go`
-- Templates are embedded at build time
-- Hot reload for development (using air or similar)
+- Run server: `go run .` (default port 7000 via `configs/app.yml`)
+- Hot reload: `make dev` (uses `air` if installed)
+- Assets: `bun run dev` or `make assets-dev`
+- Templates: `templ generate` when editing `.templ`
 - Follow Conventional Commits for commit messages
 
 ## Project Structure
 
 ```
-backend/
-├── cmd/server/           # Entry point
+gohtmx/
+├── main.go                # App bootstrap
+├── server.go              # HTTP server setup
+├── configs/               # Configuration files
 ├── internal/
-│   ├── auth/             # Authentication system
-│   ├── handlers/         # HTTP handlers
-│   ├── templates/        # TEMPL templates
-│   ├── static/           # Static assets (CSS, JS)
-│   └── ...
-└── configs/              # Configuration files
+│   ├── auth/              # Authentication system
+│   ├── handlers/          # HTTP handlers
+│   ├── middleware/        # Middlewares
+│   ├── models/            # Data models
+│   ├── router/            # Router setup
+│   ├── service/           # Business logic
+│   └── validation/        # Validation
+├── templates/             # TEMPL templates
+├── assets/                # CSS/JS sources
+└── static/                # Compiled assets
 ```
 
 ## Deployment

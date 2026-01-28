@@ -1,5 +1,6 @@
-# Makefile para GoHTMX (Go + TEMPL + HTMX + Tailwind/DaisyUI)
+# Makefile para GoHTMX (Go + TEMPL + HTMX + Tailwind v4 + DaisyUI)
 # Projeto na raiz: main.go, server.go, go.mod
+# Assets com Bun (Parcel) e templates com TEMPL
 
 # Variáveis
 BINARY_NAME=gohtmx
@@ -14,7 +15,7 @@ RED=\033[0;31m
 NC=\033[0m # No Color
 
 .PHONY: help build run run-dev test test-short test-coverage test-integration clean \
-	install mod-tidy format vet lint check check-go version \
+	install install-assets mod-tidy format vet lint check check-go version \
 	templ-generate assets-build assets-watch assets-dev dev
 
 .DEFAULT_GOAL := help
@@ -40,11 +41,11 @@ run: build ## Compila e executa o servidor
 	@echo -e "$(GREEN)Executando servidor...$(NC)"
 	@./$(BUILD_DIR)/$(BINARY_NAME)
 
-run-dev: ## Executa o servidor em modo desenvolvimento (go run)
+run-dev: ## Executa o servidor em modo desenvolvimento (go run .)
 	@echo -e "$(GREEN)Executando em modo dev...$(NC)"
 	@go run .
 
-dev: ## Hot reload: build de assets + templ + go (usa air se instalado)
+dev: ## Hot reload com air (templ + assets + go)
 	@command -v air >/dev/null 2>&1 || { echo -e "$(YELLOW)air não instalado. Use: go install github.com/air-verse/air@latest$(NC)"; go run . ; exit 0; }
 	@air
 
@@ -94,6 +95,11 @@ install: ## Baixa dependências Go
 	@echo -e "$(GREEN)Instalando dependências Go...$(NC)"
 	@go mod download
 	@echo -e "$(GREEN)Dependências instaladas$(NC)"
+
+install-assets: ## Instala dependências de assets (bun)
+	@echo -e "$(GREEN)Instalando dependências de assets...$(NC)"
+	@bun install
+	@echo -e "$(GREEN)Dependências de assets instaladas$(NC)"
 
 mod-tidy: ## go mod tidy
 	@echo -e "$(GREEN)Atualizando go.mod...$(NC)"

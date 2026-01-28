@@ -1,219 +1,177 @@
 # GoHTMX
 
-Um template fullstack pronto para uso com **autenticação baseada em sessões**, oferecendo uma alternativa moderna aos frameworks JavaScript pesados como React. Combina Golang com TEMPL para server-side rendering, HTMX para interatividade, Tailwind CSS + DaisyUI para estilização e Alpine.js para reatividade básica.
+Template fullstack com **autenticação baseada em sessões** e SSR. Combina Golang + TEMPL, HTMX, Tailwind CSS v4 + DaisyUI e Alpine.js para uma stack enxuta e rápida.
 
-## 📋 Visão Geral
+## Visão geral
 
-GoHTMX é um projeto base projetado para acelerar o desenvolvimento de aplicações web fullstack sem depender de frameworks JavaScript complexos. Este template vem pré-configurado com:
+GoHTMX é um projeto base para aplicações web fullstack sem frameworks JavaScript pesados. Ele já vem com:
 
-- **Autenticação plugável** baseada em sessões (inspirada no Lucia Auth)
-- **Server-side rendering** com TEMPL (Go 1.23+)
-- **Interatividade dinâmica** com HTMX
-- **UI moderna** com Tailwind CSS + DaisyUI
-- **Reatividade básica** com Alpine.js
-- Páginas de login e registro prontas
-- Página de exemplo demonstrando toda a stack
+- **Autenticação plugável** por sessão (inspirada no Lucia Auth)
+- **SSR** com TEMPL (Go 1.23+)
+- **Interatividade** com HTMX
+- **UI** com Tailwind CSS v4 + DaisyUI
+- **Reatividade leve** com Alpine.js
+- Páginas de login/registro e exemplo completo
 
-## 🎯 Filosofia do Projeto
+## Filosofia
 
-Este template oferece uma alternativa aos frameworks JavaScript pesados:
+- SSR para carregamento rápido
+- HTMX para atualizações parciais
+- Menos JavaScript, menos complexidade
+- Build simples e binário único
 
-- ✅ **Server-side rendering** para carregamento rápido
-- ✅ **HTMX** para atualizações dinâmicas sem recarregar a página
-- ✅ **Alpine.js** para interatividade mínima no cliente
-- ✅ **Sem build step complexo** - apenas templates Go
-- ✅ **Single binary** para deploy simples
-- ✅ **Menos JavaScript** = menos complexidade
-
-## 🚀 Recursos
+## Recursos
 
 ### Backend (Golang)
 
-- **Template Engine**: TEMPL (server-side rendering)
-- **Autenticação plugável** com adapters (estilo Lucia Auth)
-- Sessões armazenadas no banco de dados
-- Banco de dados PostgreSQL com GORM
-- Estrutura modular e escalável
-- Middleware de autenticação
-- API RESTful com Gin
+- Gin como framework HTTP
+- Autenticação baseada em sessão (DB)
+- PostgreSQL com GORM
+- Middlewares de autenticação, CORS e rate limit
+- Área admin com gestão de usuários
 
 ### Frontend
 
-- **Templates TEMPL** para renderização server-side
-- **HTMX** para interações dinâmicas
-- **Tailwind CSS + DaisyUI** para UI moderna e responsiva
-- **Alpine.js** para reatividade básica
-- Páginas de autenticação prontas (login, registro)
-- Página de exemplo demonstrando a stack completa
+- Templates TEMPL com layouts e componentes
+- HTMX para interações
+- Tailwind CSS v4 + DaisyUI
+- Alpine.js para estados simples
 
-## 🛠️ Pré-requisitos
+## Pré-requisitos
 
-- Go 1.23+ (para suporte ao TEMPL)
+- Go 1.23+
+- PostgreSQL
+- Bun (apenas para assets)
 - Docker e Docker Compose (opcional)
 
-## 🔧 Instalação e Uso
+## Instalação e uso
 
-### Clonando o template
+### Clone
 
 ```bash
 git clone https://github.com/lucas-varjao/gohtmx.git meu-novo-projeto
 cd meu-novo-projeto
 ```
 
-### Execução
+### Rodando o servidor
 
 ```bash
-cd backend
 go mod download
-go run cmd/server/server.go
+go run .
 ```
 
-O servidor estará disponível em `http://localhost:8080`
+O servidor sobe em `http://localhost:7000` (configurável).
 
-### Usando Docker Compose (opcional)
+### Desenvolvimento com hot reload (opcional)
 
 ```bash
-docker-compose up
+make dev
 ```
 
-## 📁 Estrutura do Projeto
+### Assets (opcional)
+
+```bash
+bun install
+bun run dev
+```
+
+## Estrutura do projeto
 
 ```
 gohtmx/
-├── backend/
-│   ├── cmd/server/           # Ponto de entrada
-│   ├── configs/              # Arquivos de configuração
-│   └── internal/
-│       ├── auth/             # Sistema de autenticação
-│       │   ├── interfaces.go # UserAdapter, SessionAdapter
-│       │   ├── auth_manager.go
-│       │   └── adapter/gorm/ # Implementação GORM
-│       ├── config/           # Gerenciamento de configuração
-│       ├── handlers/         # Handlers HTTP
-│       ├── middleware/       # Middlewares (auth, CORS, rate limit)
-│       ├── models/           # Modelos de dados
-│       ├── repository/       # Camada de repositório
-│       ├── router/           # Configuração de rotas
-│       ├── service/          # Lógica de negócio
-│       ├── templates/        # Templates TEMPL
-│       ├── static/           # Assets estáticos (CSS, JS)
-│       └── validation/       # Validação de dados
+├── main.go                # Bootstrap do app
+├── server.go              # Setup do servidor e rotas
+├── configs/               # Configurações (app.yml)
+├── internal/
+│   ├── auth/              # Sistema de autenticação
+│   ├── config/            # Carregamento de config
+│   ├── handlers/          # Handlers HTTP
+│   ├── middleware/        # Middlewares (auth, CORS, rate limit)
+│   ├── models/            # Modelos de dados
+│   ├── router/            # Setup de rotas
+│   ├── service/           # Lógica de negócio
+│   └── validation/        # Validação
+├── templates/             # Templates TEMPL
+├── assets/                # Fontes de CSS/JS
+└── static/                # Assets compilados
 ```
 
-## 🔐 Autenticação
+## Autenticação
 
-O sistema usa **autenticação baseada em sessões** com adapters plugáveis:
+O sistema usa **sessões armazenadas no banco** com adapters plugáveis.
+
+- Login retorna `session_id`
+- Auth via `Authorization: Bearer {session_id}` ou cookie `session_id`
+
+Usuário admin padrão:
+
+- `username`: `admin`
+- `password`: `admin`
+
+## Stack Frontend
+
+### TEMPL
 
 ```go
-// Interfaces que você pode implementar para qualquer banco
-type UserAdapter interface {
-    FindUserByIdentifier(identifier string) (*UserData, error)
-    ValidateCredentials(identifier, password string) (*UserData, error)
-    // ...
+templ Layout(title string, body templ.Component) {
+	<div class="container">
+		<h1>{ title }</h1>
+		@body
+	</div>
 }
-
-type SessionAdapter interface {
-    CreateSession(userID string, expiresAt time.Time, metadata SessionMetadata) (*Session, error)
-    GetSession(sessionID string) (*Session, error)
-    // ...
-}
-```
-
-### Resposta de Login
-
-```json
-{
-    "session_id": "abc123...",
-    "expires_at": "2024-02-11T12:00:00Z",
-    "user": {
-        "id": "1",
-        "identifier": "admin",
-        "email": "admin@example.com",
-        "display_name": "Administrator",
-        "role": "admin"
-    }
-}
-```
-
-## 🎨 Stack Frontend
-
-### TEMPL (Templates)
-
-Templates Go para renderização server-side:
-
-```go
-// Exemplo de template
-{{ define "page" }}
-<div class="container">
-    <h1>{{ .Title }}</h1>
-    {{ template "content" . }}
-</div>
-{{ end }}
 ```
 
 ### HTMX
 
-Para interações dinâmicas sem JavaScript complexo:
-
 ```html
-<button hx-post="/api/action" hx-target="#result">
-    Clique aqui
-</button>
+<button hx-post="/api/action" hx-target="#result">Clique aqui</button>
 <div id="result"></div>
 ```
 
 ### Alpine.js
 
-Para reatividade básica no cliente:
-
 ```html
 <div x-data="{ open: false }">
-    <button @click="open = !open">Toggle</button>
-    <div x-show="open">Conteúdo</div>
+  <button @click="open = !open">Toggle</button>
+  <div x-show="open">Conteúdo</div>
 </div>
 ```
 
 ### Tailwind CSS + DaisyUI
-
-Para estilização rápida e consistente:
 
 ```html
 <button class="btn btn-primary">Botão</button>
 <div class="card bg-base-100 shadow-xl">Card</div>
 ```
 
-## ⚙️ Configuração
+## Configuração
 
-Edite o arquivo `backend/configs/app.yml` para ajustar as configurações:
+Edite `configs/app.yml`:
 
 ```yaml
 server:
-    port: 8080
+  port: 7000
 database:
-    dsn: 'host=localhost user=gohtmx password=gohtmx dbname=gohtmx port=5432 sslmode=disable TimeZone=UTC'
+  dsn: 'host=localhost user=gohtmx password=gohtmx dbname=gohtmx port=5432 sslmode=disable TimeZone=UTC'
 log:
-    level: 'info'
-    format: 'text'
+  level: 'info'
+  format: 'text'
 ```
 
-Em produção, defina a variável de ambiente `DATABASE_DSN` para sobrescrever o DSN do arquivo.
+Em produção, use `DATABASE_DSN` para sobrescrever o DSN.
 
-## 🔄 Começando um Novo Projeto
+## Começando um novo projeto
 
 1. Clone este repositório com um novo nome
-2. Personalize as configurações em `backend/configs/app.yml`
-3. Modifique os modelos no backend conforme necessário
-4. Adapte os templates em `backend/internal/templates/`
-5. Para integrar com outro banco de usuários, implemente `UserAdapter`
+2. Ajuste `configs/app.yml`
+3. Modifique modelos e serviços em `internal/`
+4. Adapte templates em `templates/`
+5. Atualize os assets em `assets/` quando necessário
 
-## 📄 Licença
+## Licença
 
-Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICENSE) para detalhes.
+MIT. Veja `LICENSE` para detalhes.
 
-## 🤝 Contribuição
+## Contribuição
 
-Contribuições são bem-vindas! Por favor, sinta-se à vontade para enviar um pull request.
-
----
-
-Desenvolvido com ❤️ para oferecer uma alternativa simples e eficiente aos frameworks JavaScript pesados.
+Contribuições são bem-vindas via pull request.
