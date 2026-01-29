@@ -1,7 +1,12 @@
 package main
 
 import (
+	"context"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/lucas-varjao/gohtmx/internal/auth"
 	gormadapter "github.com/lucas-varjao/gohtmx/internal/auth/adapter/gorm"
@@ -89,9 +94,47 @@ func main() {
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
 
-	// Run server with all infrastructure
-	if err := runServer(authHandler, authManager, db); err != nil {
-		logger.Error("Erro ao iniciar servidor", "error", err)
+	// Build server instance
+	server, err := buildServer(authHandler, authManager, db)
+	if err != nil {
+		logger.Error("Erro ao criar servidor", "error", err)
 		os.Exit(1)
+	}
+
+	// Channel to receive server errors
+	serverErr := make(chan error, 1)
+
+	// Start server in a goroutine
+	go func() {
+		logger.Info("Servidor iniciado", "port", cfg.Server.Port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			serverErr <- err
+		}
+	}()
+
+	// Channel to receive OS signals
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+
+	// Wait for either a server error or a shutdown signal
+	select {
+	case err := <-serverErr:
+		logger.Error("Erro no servidor", "error", err)
+		os.Exit(1)
+	case sig := <-sigChan:
+		logger.Info("Sinal de shutdown recebido", "signal", sig.String())
+		logger.Info("Iniciando shutdown gracioso...")
+
+		// Create context with timeout for graceful shutdown
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		// Attempt graceful shutdown
+		if err := server.Shutdown(ctx); err != nil {
+			logger.Error("Erro durante shutdown gracioso", "error", err)
+			os.Exit(1)
+		}
+
+		logger.Info("Shutdown gracioso concluído")
 	}
 }

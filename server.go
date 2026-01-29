@@ -52,11 +52,12 @@ func (t *TemplRender) Instance(name string, data any) render.Render {
 	return nil
 }
 
-// runServer runs a new HTTP server with the loaded environment variables.
-func runServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager, db *gorm.DB) error {
+// buildServer creates and configures a new HTTP server instance.
+// Returns the server instance ready to be started, or an error if configuration fails.
+func buildServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager, db *gorm.DB) (*http.Server, error) {
 	cfg := config.GetConfig()
 	if cfg == nil {
-		return fmt.Errorf("config not loaded")
+		return nil, fmt.Errorf("config not loaded")
 	}
 
 	// Custom recovery: render HTML error page or JSON depending on Accept header
@@ -139,8 +140,5 @@ func runServer(authHandler *handlers.AuthHandler, authManager *auth.AuthManager,
 		Handler:      r,
 	}
 
-	// Send log message.
-	logger.Info("Starting server...", "port", port)
-
-	return server.ListenAndServe()
+	return server, nil
 }
