@@ -30,6 +30,12 @@ import (
 // AppVersion is shown in the footer. Set via ldflags on release or use "dev".
 var AppVersion = "dev"
 
+// Role constants keep role comparisons consistent.
+const (
+	roleAdmin = "admin"
+	roleUser  = "user"
+)
+
 // getNavData returns displayName and loggedIn for the navbar from the current request.
 func getNavData(c *gin.Context, authManager *auth.AuthManager) (displayName string, loggedIn bool) {
 	sessionID := middleware.ExtractSessionID(c)
@@ -257,8 +263,8 @@ func adminDashboardView(c *gin.Context, db *gorm.DB, authManager *auth.AuthManag
 	db.Model(&models.User{}).Count(&totalUsers)
 	db.Model(&models.User{}).Where("active = ?", true).Count(&activeUsers)
 	db.Model(&models.User{}).Where("active = ?", false).Count(&inactiveUsers)
-	db.Model(&models.User{}).Where("role = ?", "admin").Count(&adminUsers)
-	db.Model(&models.User{}).Where("role = ?", "user").Count(&regularUsers)
+	db.Model(&models.User{}).Where("role = ?", roleAdmin).Count(&adminUsers)
+	db.Model(&models.User{}).Where("role = ?", roleUser).Count(&regularUsers)
 
 	stats := admin.DashboardStats{
 		TotalUsers:    int(totalUsers),
@@ -269,7 +275,7 @@ func adminDashboardView(c *gin.Context, db *gorm.DB, authManager *auth.AuthManag
 	}
 
 	displayName, loggedIn := getNavData(c, authManager)
-	metaTags := pages.MetaTags("admin, dashboard, estatísticas", "Dashboard administrativo")
+	metaTags := pages.MetaTags("admin, dashboard, estatísticas", "Dashboard administration")
 	pageContent := admin.DashboardPage(stats, icons.Users(), icons.UsersRound(), icons.UserCheck(), icons.UserX(), icons.Shield(), icons.User())
 	bodyContent := layouts.AdminBody("", icons.LayoutDashboard(), icons.Users(), icons.LogOut(), icons.Home(), pageContent)
 
@@ -301,20 +307,9 @@ func adminUsersView(c *gin.Context, db *gorm.DB, authManager *auth.AuthManager) 
 		return
 	}
 	views := make([]admin.UserView, 0, len(users))
-	for _, u := range users {
-		lastLogin := ""
-		if !u.LastLogin.IsZero() {
-			lastLogin = u.LastLogin.Format("02/01/2006 15:04")
-		}
-		views = append(views, admin.UserView{
-			ID:          strconv.FormatUint(uint64(u.ID), 10),
-			Username:    u.Username,
-			Email:       u.Email,
-			DisplayName: u.DisplayName,
-			Role:        u.Role,
-			Active:      u.Active,
-			LastLogin:   lastLogin,
-		})
+	for i := range users {
+		view := userViewFromModel(&users[i])
+		views = append(views, view)
 	}
 	displayName, loggedIn := getNavData(c, authManager)
 	metaTags := pages.MetaTags("admin, usuários, gestão", "Gerencie usuários do sistema.")
@@ -356,17 +351,49 @@ func userViewFromModel(u *models.User) admin.UserView {
 	}
 }
 
+// normalizeUserRole ensures only supported roles are persisted.
+func normalizeUserRole(role string) string {
+	if role != roleAdmin && role != roleUser {
+		return roleUser
+	}
+	return role
+}
+
+// parseBoolFormValue treats common form truthy values as true.
+func parseBoolFormValue(value string) bool {
+	return value == "true" || value == "1"
+}
+
+// renderNewUserHTMXError writes the error fragment for the new-user form.
+func renderNewUserHTMXError(c *gin.Context, message string) {
+	// HTMX não faz swap em 4xx; retornar 200 para o conteúdo de erro ser colocado em #new-user-error
+	alert := components.ErrorAlert(message, icons.Error())
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	c.Header("HX-Retarget", "#new-user-error")
+	c.Header("HX-Reswap", "innerHTML")
+	c.Status(http.StatusOK)
+	_ = alert.Render(context.Background(), c.Writer)
+}
+
+// respondNewUserError sends an HTMX fragment or redirects with a query error.
+func respondNewUserError(c *gin.Context, message string) {
+	if c.GetHeader("HX-Request") != "" {
+		renderNewUserHTMXError(c, message)
+		return
+	}
+	c.Redirect(http.StatusSeeOther, "/admin/users/new?error="+url.QueryEscape(message))
+}
+
 // adminUserRolePost updates a user's role and returns the updated table row HTML for HTMX swap.
 func adminUserRolePost(c *gin.Context, db *gorm.DB) {
 	idStr := c.Param("id")
 	// PostForm reads from both URL query and body; form from HTMX is in body as application/x-www-form-urlencoded
 	role := c.PostForm("role")
 	if role == "" {
+		// Fallback to PostFormValue for clients that send role in the query string.
 		role = c.Request.PostFormValue("role")
 	}
-	if role != "admin" && role != "user" {
-		role = "user"
-	}
+	role = normalizeUserRole(role)
 	var u models.User
 	if err := db.First(&u, idStr).Error; err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
@@ -461,24 +488,11 @@ func adminUsersCreatePost(c *gin.Context, db *gorm.DB) {
 	email := c.PostForm("email")
 	displayName := c.PostForm("display_name")
 	password := c.PostForm("password")
-	role := c.PostForm("role")
-	if role != "admin" && role != "user" {
-		role = "user"
-	}
-	active := c.PostForm("active") == "true" || c.PostForm("active") == "1"
+	role := normalizeUserRole(c.PostForm("role"))
+	active := parseBoolFormValue(c.PostForm("active"))
 
 	if err := validation.ValidateRegistrationRequest(username, email, password, displayName); err != nil {
-		if c.GetHeader("HX-Request") != "" {
-			// HTMX não faz swap em 4xx; retornar 200 para o conteúdo de erro ser colocado em #new-user-error
-			alert := components.ErrorAlert(err.Error(), icons.Error())
-			c.Header("Content-Type", "text/html; charset=utf-8")
-			c.Header("HX-Retarget", "#new-user-error")
-			c.Header("HX-Reswap", "innerHTML")
-			c.Status(http.StatusOK)
-			_ = alert.Render(context.Background(), c.Writer)
-			return
-		}
-		c.Redirect(http.StatusSeeOther, "/admin/users/new?error="+url.QueryEscape(err.Error()))
+		respondNewUserError(c, err.Error())
 		return
 	}
 
@@ -496,18 +510,7 @@ func adminUsersCreatePost(c *gin.Context, db *gorm.DB) {
 		Active:       active,
 	}
 	if err := db.Create(&u).Error; err != nil {
-		msg := "usuário ou email já existe"
-		if c.GetHeader("HX-Request") != "" {
-			// HTMX não faz swap em 4xx; retornar 200 para o conteúdo de erro ser colocado em #new-user-error
-			alert := components.ErrorAlert(msg, icons.Error())
-			c.Header("Content-Type", "text/html; charset=utf-8")
-			c.Header("HX-Retarget", "#new-user-error")
-			c.Header("HX-Reswap", "innerHTML")
-			c.Status(http.StatusOK)
-			_ = alert.Render(context.Background(), c.Writer)
-			return
-		}
-		c.Redirect(http.StatusSeeOther, "/admin/users/new?error="+url.QueryEscape(msg))
+		respondNewUserError(c, "usuário ou email já existe")
 		return
 	}
 	if c.GetHeader("HX-Request") != "" {

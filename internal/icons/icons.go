@@ -100,7 +100,7 @@ func Menu() template.HTML {
 
 // Home returns the home icon for "Voltar ao site" link in admin sidebar.
 func Home() template.HTML {
-	return lucide.Home(lucide.Options{Color: colorCurrent, Class: classButton})
+	return lucide.House(lucide.Options{Color: colorCurrent, Class: classButton})
 }
 
 // UserCheck returns the user-check icon for active users stat in dashboard.

@@ -2,6 +2,8 @@
 package middleware
 
 import (
+	"net/http"
+
 	"github.com/lucas-varjao/gohtmx/internal/auth"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +17,7 @@ func AdminWebMiddleware(authManager *auth.AuthManager, onForbidden func(*gin.Con
 	return func(c *gin.Context) {
 		sessionID := ExtractSessionID(c)
 		if sessionID == "" {
-			c.Redirect(302, "/login")
+			c.Redirect(http.StatusFound, "/login")
 			c.Abort()
 			return
 		}
@@ -24,7 +26,7 @@ func AdminWebMiddleware(authManager *auth.AuthManager, onForbidden func(*gin.Con
 		if err != nil || user == nil {
 			// Clear invalid session cookie
 			ClearSessionCookie(c)
-			c.Redirect(302, "/login")
+			c.Redirect(http.StatusFound, "/login")
 			c.Abort()
 			return
 		}
@@ -34,7 +36,7 @@ func AdminWebMiddleware(authManager *auth.AuthManager, onForbidden func(*gin.Con
 			if onForbidden != nil {
 				onForbidden(c)
 			} else {
-				c.AbortWithStatus(403)
+				c.AbortWithStatus(http.StatusForbidden)
 			}
 			return
 		}
