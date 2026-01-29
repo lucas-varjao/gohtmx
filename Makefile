@@ -16,7 +16,7 @@ NC=\033[0m # No Color
 
 .PHONY: help build run run-dev test test-short test-coverage test-integration clean \
 	install install-assets mod-tidy format vet lint check check-go version \
-	templ-generate assets-build assets-watch assets-dev dev
+	templ-generate assets-build assets-watch assets-dev dev bootstrap
 
 .DEFAULT_GOAL := help
 
@@ -132,3 +132,6 @@ check-go: ## Verifica se Go está instalado
 
 version: ## Versão do Go
 	@echo -e "$(GREEN)Go:$(NC)" && go version
+
+bootstrap: ## Renomeia módulo Go e nome do projeto (use ao criar projeto novo do template)
+	@./scripts/bootstrap.sh
