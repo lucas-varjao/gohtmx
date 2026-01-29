@@ -63,12 +63,17 @@ replace_in_file() {
     local file="$1"
     local old="$2"
     local new="$3"
+    local old_escaped=""
+    local new_escaped=""
     
     if [ -f "$file" ]; then
         # Verificar se o arquivo contém o texto a ser substituído
-        if grep -q "$old" "$file" 2>/dev/null; then
+        if grep -Fq "$old" "$file" 2>/dev/null; then
+            # Escapar caracteres especiais para o sed
+            old_escaped=$(printf '%s' "$old" | sed -e 's/[.[\\*^$+?{}()|\\]/\\&/g')
+            new_escaped=$(printf '%s' "$new" | sed -e 's/[&|\\]/\\&/g')
             # Usar sed com backup (cria .bak e depois remove)
-            if sed -i.bak "s|${old}|${new}|g" "$file" 2>/dev/null; then
+            if sed -i.bak "s|${old_escaped}|${new_escaped}|g" "$file" 2>/dev/null; then
                 rm -f "${file}.bak"
                 echo "  ✓ $file"
                 return 0
@@ -116,23 +121,13 @@ replace_in_file ".air.toml" "# Config file for Air live-reloading tool (GoHTMX)"
 replace_in_file ".air.toml" "cmd = \"go run github.com/a-h/templ/cmd/templ@latest generate && go build -o ./tmp/${OLD_PROJECT_NAME} .\"" "cmd = \"go run github.com/a-h/templ/cmd/templ@latest generate && go build -o ./tmp/${NEW_PROJECT_NAME} .\""
 replace_in_file ".air.toml" "bin = \"tmp/${OLD_PROJECT_NAME}\"" "bin = \"tmp/${NEW_PROJECT_NAME}\""
 
-# configs/app.yml - database DSN e email
-replace_in_file "configs/app.yml" "user=${OLD_PROJECT_NAME}" "user=${NEW_PROJECT_NAME}"
-replace_in_file "configs/app.yml" "password=${OLD_PROJECT_NAME}" "password=${NEW_PROJECT_NAME}"
-replace_in_file "configs/app.yml" "dbname=${OLD_PROJECT_NAME}" "dbname=${NEW_PROJECT_NAME}"
+# configs/app.yml - email (não alterar DSN)
 replace_in_file "configs/app.yml" "from_email: 'no-reply@${OLD_PROJECT_NAME}.com'" "from_email: 'no-reply@${NEW_PROJECT_NAME}.com'"
 replace_in_file "configs/app.yml" "from_name: 'GoHTMX'" "from_name: '${NEW_PROJECT_NAME}'"
 
-# docker-compose.yml - service names, network, database credentials
+# docker-compose.yml - service names, network (não alterar credenciais/DSN)
 replace_in_file "docker-compose.yml" "# docker-compose.yml for GoHTMX" "# docker-compose.yml for ${NEW_PROJECT_NAME}"
-replace_in_file "docker-compose.yml" "POSTGRES_USER: ${OLD_PROJECT_NAME}" "POSTGRES_USER: ${NEW_PROJECT_NAME}"
-replace_in_file "docker-compose.yml" "POSTGRES_PASSWORD: ${OLD_PROJECT_NAME}" "POSTGRES_PASSWORD: ${NEW_PROJECT_NAME}"
-replace_in_file "docker-compose.yml" "POSTGRES_DB: ${OLD_PROJECT_NAME}" "POSTGRES_DB: ${NEW_PROJECT_NAME}"
-replace_in_file "docker-compose.yml" "pg_isready -U ${OLD_PROJECT_NAME} -d ${OLD_PROJECT_NAME}" "pg_isready -U ${NEW_PROJECT_NAME} -d ${NEW_PROJECT_NAME}"
 replace_in_file "docker-compose.yml" "  ${OLD_PROJECT_NAME}:" "  ${NEW_PROJECT_NAME}:"
-replace_in_file "docker-compose.yml" "user=${OLD_PROJECT_NAME}" "user=${NEW_PROJECT_NAME}"
-replace_in_file "docker-compose.yml" "password=${OLD_PROJECT_NAME}" "password=${NEW_PROJECT_NAME}"
-replace_in_file "docker-compose.yml" "dbname=${OLD_PROJECT_NAME}" "dbname=${NEW_PROJECT_NAME}"
 replace_in_file "docker-compose.yml" "${OLD_PROJECT_NAME}_network" "${NEW_PROJECT_NAME}_network"
 
 # README.md - título e referências principais
